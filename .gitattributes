@@ -1,0 +1,38 @@
+# Formelio - Git Attributes Configuration
+# Force UTF-8 encoding and consistent line endings
+
+# Markdown files - UTF-8 encoding
+*.md text eol=lf encoding=utf-8
+
+# Claude configuration files - UTF-8 encoding
+.claude/* text eol=lf encoding=utf-8
+.clinerules text eol=lf encoding=utf-8
+
+# Documentation - UTF-8 encoding
+docs/** text eol=lf encoding=utf-8
+
+# Source code files
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+
+# Configuration files
+*.yml text eol=lf
+*.yaml text eol=lf
+.env* text eol=lf
+.gitignore text eol=lf
+
+# Prevent binary files from being modified
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

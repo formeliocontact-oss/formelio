@@ -1,0 +1,1177 @@
+# CLAUDE.md - Formelio Project Rules
+
+**Version**: 1.0
+**Date**: Octobre 2025
+**Project**: Formelio - Service de formalitÃ©s juridiques
+
+---
+
+## ðŸ“‹ Table des matiÃ¨res
+
+1. [Stack Technique](#stack-technique)
+2. [Structure du Projet](#structure-du-projet)
+3. [RÃ¨gles TypeScript Strictes](#rÃ¨gles-typescript-strictes)
+4. [Architecture des Composants](#architecture-des-composants)
+5. [HTML SÃ©mantique](#html-sÃ©mantique)
+6. [Conventions Next.js](#conventions-nextjs)
+7. [RÃ¨gles Supabase](#rÃ¨gles-supabase)
+8. [Styling avec Tailwind & Shadcn](#styling-avec-tailwind--shadcn)
+9. [Gestion d'Ã‰tat](#gestion-dÃ©tat)
+10. [Tests](#tests)
+11. [Performance](#performance)
+12. [SÃ©curitÃ© & RGPD](#sÃ©curitÃ©--rgpd)
+
+---
+
+## Stack Technique
+
+**Framework**: Next.js 14 (App Router)  
+**Language**: TypeScript 5.2+  
+**Styling**: Tailwind CSS 3.4 + Shadcn UI  
+**Backend**: Supabase (Auth, Database, Storage, Realtime)  
+**State Management**: React Hooks (useState, useReducer)  
+**Forms**: React Hook Form + Zod  
+**Testing**: Jest + React Testing Library  
+**Package Manager**: npm
+
+---
+
+## Structure du Projet
+
+```
+formelio/
+â”œâ”€â”€ app/                          # Next.js App Router
+â”‚   â”œâ”€â”€ (auth)/                   # Grouped routes (login, register)
+â”‚   â”œâ”€â”€ (marketing)/              # Public pages (landing, about)
+â”‚   â”œâ”€â”€ dashboard/                # Protected routes
+â”‚   â”œâ”€â”€ api/                      # API routes
+â”‚   â”œâ”€â”€ layout.tsx
+â”‚   â””â”€â”€ page.tsx
+â”œâ”€â”€ components/
+â”‚   â”œâ”€â”€ ui/                       # Shadcn UI components
+â”‚   â”œâ”€â”€ forms/                    # Form components
+â”‚   â”œâ”€â”€ layouts/                  # Layout components
+â”‚   â””â”€â”€ features/                 # Feature-specific components
+â”œâ”€â”€ lib/
+â”‚   â”œâ”€â”€ supabase/                 # Supabase utilities
+â”‚   â”œâ”€â”€ utils/                    # Helper functions
+â”‚   â”œâ”€â”€ validations/              # Zod schemas
+â”‚   â””â”€â”€ constants.ts
+â”œâ”€â”€ hooks/                        # Custom React hooks
+â”œâ”€â”€ types/                        # TypeScript types & interfaces
+â”œâ”€â”€ public/                       # Static assets
+â”œâ”€â”€ styles/                       # Global styles
+â””â”€â”€ tests/                        # Test files
+```
+
+### Conventions de structure
+
+- **Un composant = Un fichier** : Ã‰viter les fichiers avec multiples composants
+- **Co-location** : Garder les fichiers liÃ©s ensemble (component + test + styles)
+- **Naming** : kebab-case pour dossiers, PascalCase pour composants
+- **Max 300 lignes par fichier** : Si dÃ©passÃ©, diviser en sous-composants
+
+---
+
+## RÃ¨gles TypeScript Strictes
+
+### Configuration tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  }
+}
+```
+
+### â›” INTERDICTIONS ABSOLUES
+
+```typescript
+// âŒ JAMAIS utiliser `any` - fragilise le typage
+const data: any = fetchData();
+
+// âŒ JAMAIS utiliser `as any` - contourne la sÃ©curitÃ© TypeScript
+const value = someValue as any;
+
+// âŒ JAMAIS ignorer les erreurs TypeScript avec @ts-ignore
+// @ts-ignore
+const result = unsafeOperation();
+
+// âŒ JAMAIS de types implicites
+function processData(data) { // âŒ Type implicite
+  return data.value;
+}
+```
+
+### âœ… BONNES PRATIQUES
+
+```typescript
+// âœ… Typage explicite avec types stricts
+interface UserData {
+  id: string;
+  email: string;
+  name: string | null;
+}
+
+// âœ… Utiliser `unknown` pour les donnÃ©es non vÃ©rifiÃ©es
+const data: unknown = await fetchData();
+if (isUserData(data)) {
+  // Type guard pour vÃ©rifier le type
+  console.log(data.email);
+}
+
+// âœ… Types pour les props de composants
+interface ButtonProps {
+  children: React.ReactNode;
+  onClick: () => void;
+  variant?: 'primary' | 'secondary';
+  disabled?: boolean;
+}
+
+export function Button({ children, onClick, variant = 'primary', disabled = false }: ButtonProps) {
+  // Implementation
+}
+
+// âœ… Utiliser `as const` pour les constantes
+const STATUS = {
+  PENDING: 'pending',
+  IN_PROGRESS: 'in_progress',
+  COMPLETED: 'completed'
+} as const;
+
+type Status = typeof STATUS[keyof typeof STATUS];
+
+// âœ… Type guards pour la validation
+function isUserData(data: unknown): data is UserData {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'id' in data &&
+    'email' in data &&
+    typeof (data as UserData).id === 'string' &&
+    typeof (data as UserData).email === 'string'
+  );
+}
+```
+
+### RÃ¨gles de nommage des types
+
+- **Interfaces** : PascalCase avec suffixe descriptif (ex: `UserProfile`, `CaseData`)
+- **Types** : PascalCase (ex: `Status`, `Priority`)
+- **Enums** : PascalCase au singulier (ex: `CaseStatus`, `UserRole`)
+- **Generic types** : Lettres majuscules simples ou PascalCase (ex: `T`, `TData`, `TResponse`)
+
+---
+
+## Architecture des Composants
+
+### RÃ¨gle d'Or : Ã‰VITER LES DOUBLONS
+
+```typescript
+// âŒ MAUVAIS : Duplication de logique
+function UserCard({ user }: { user: User }) {
+  const [loading, setLoading] = useState(false);
+  const handleUpdate = async () => {
+    setLoading(true);
+    await updateUser(user.id);
+    setLoading(false);
+  };
+  // ...
+}
+
+function ProfileCard({ user }: { user: User }) {
+  const [loading, setLoading] = useState(false);
+  const handleUpdate = async () => {
+    setLoading(true);
+    await updateUser(user.id);
+    setLoading(false);
+  };
+  // ...
+}
+
+// âœ… BON : Hook rÃ©utilisable
+function useUserUpdate(userId: string) {
+  const [loading, setLoading] = useState(false);
+  
+  const updateUser = async () => {
+    setLoading(true);
+    try {
+      await api.updateUser(userId);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  return { updateUser, loading };
+}
+
+// Utilisation dans les composants
+function UserCard({ user }: { user: User }) {
+  const { updateUser, loading } = useUserUpdate(user.id);
+  // ...
+}
+```
+
+### Structure d'un composant
+
+```typescript
+// 1. Imports (groupÃ©s par catÃ©gorie)
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import type { Case } from '@/types/case';
+
+// 2. Types & Interfaces
+interface CaseCardProps {
+  case: Case;
+  onUpdate?: (id: string) => void;
+}
+
+// 3. Constantes locales
+const MAX_DESCRIPTION_LENGTH = 150;
+
+// 4. Composant principal
+export function CaseCard({ case: caseData, onUpdate }: CaseCardProps) {
+  // 4.1 Hooks d'Ã©tat
+  const [loading, setLoading] = useState(false);
+  
+  // 4.2 Hooks de routing/contexte
+  const router = useRouter();
+  
+  // 4.3 Custom hooks
+  const { updateCase } = useCaseUpdate();
+  
+  // 4.4 Fonctions utilitaires locales
+  const truncateDescription = (text: string) => {
+    if (text.length <= MAX_DESCRIPTION_LENGTH) return text;
+    return `${text.substring(0, MAX_DESCRIPTION_LENGTH)}...`;
+  };
+  
+  // 4.5 Event handlers
+  const handleUpdate = async () => {
+    setLoading(true);
+    await updateCase(caseData.id);
+    setLoading(false);
+    onUpdate?.(caseData.id);
+  };
+  
+  // 4.6 useEffect hooks
+  useEffect(() => {
+    // Side effects
+  }, []);
+  
+  // 4.7 Render
+  return (
+    <article className="p-4 border rounded-lg">
+      {/* Contenu */}
+    </article>
+  );
+}
+
+// 5. Sous-composants (si nÃ©cessaire et petits)
+function CaseStatus({ status }: { status: string }) {
+  return <span className="badge">{status}</span>;
+}
+```
+
+### RÃ¨gles de taille des composants
+
+- **< 150 lignes** : IdÃ©al, composant maintenable
+- **150-300 lignes** : Acceptable, envisager la division
+- **> 300 lignes** : âš ï¸ OBLIGATOIRE de diviser
+
+### Comment diviser un composant trop long
+
+```typescript
+// âŒ AVANT : Composant de 500 lignes
+function CaseDashboard() {
+  // 100 lignes de state management
+  // 200 lignes de logique mÃ©tier
+  // 200 lignes de JSX
+}
+
+// âœ… APRÃˆS : Division en composants logiques
+
+// 1. Extract custom hooks
+function useCaseDashboard() {
+  // State management et logique mÃ©tier
+  return { cases, loading, updateCase, deleteCase };
+}
+
+// 2. Extract sous-composants
+function CaseList({ cases }: { cases: Case[] }) {
+  return (
+    <ul>
+      {cases.map(c => <CaseListItem key={c.id} case={c} />)}
+    </ul>
+  );
+}
+
+function CaseListItem({ case: caseData }: { case: Case }) {
+  return <li>{/* DÃ©tails d'un case */}</li>;
+}
+
+// 3. Composant principal simplifiÃ©
+function CaseDashboard() {
+  const { cases, loading } = useCaseDashboard();
+  
+  if (loading) return <LoadingSpinner />;
+  
+  return (
+    <div>
+      <CaseFilters />
+      <CaseList cases={cases} />
+    </div>
+  );
+}
+```
+
+### Principe de responsabilitÃ© unique
+
+Chaque composant doit avoir **UNE SEULE** responsabilitÃ© :
+
+- âœ… `UserAvatar` : Afficher un avatar
+- âœ… `CaseStatusBadge` : Afficher un badge de statut
+- âœ… `DocumentUploader` : GÃ©rer l'upload de documents
+- âŒ `UserProfileSectionWithAvatarAndCases` : Trop de responsabilitÃ©s
+
+---
+
+## HTML SÃ©mantique
+
+### â›” INTERDICTION : Div Soup
+
+```tsx
+// âŒ MAUVAIS : Divs imbriquÃ©es sans sens sÃ©mantique
+<div className="container">
+  <div className="header">
+    <div className="title">Titre</div>
+    <div className="nav">
+      <div onClick={handleClick}>Lien</div>
+    </div>
+  </div>
+  <div className="content">
+    <div className="article">Contenu</div>
+  </div>
+</div>
+```
+
+### âœ… BON : HTML SÃ©mantique
+
+```tsx
+// âœ… BON : Utilisation correcte des balises sÃ©mantiques
+// Note: Minimiser les <div> - un seul wrapper si nÃ©cessaire pour le styling
+<div className="page-wrapper">
+  <header>
+    <h1>Titre</h1>
+    <nav>
+      <button onClick={handleClick} type="button">
+        Lien
+      </button>
+    </nav>
+  </header>
+  <main>
+    <article>
+      <p>Contenu</p>
+    </article>
+  </main>
+  <footer>
+    <p>Footer content</p>
+  </footer>
+</div>
+```
+
+### Balises sÃ©mantiques Ã  privilÃ©gier
+
+| Ã‰lÃ©ment | Usage | Au lieu de |
+|---------|-------|------------|
+| `<header>` | En-tÃªte de page/section | `<div className="header">` |
+| `<nav>` | Navigation principale | `<div className="nav">` |
+| `<main>` | Contenu principal | `<div className="main">` |
+| `<article>` | Contenu autonome | `<div className="article">` |
+| `<section>` | Section thÃ©matique | `<div className="section">` |
+| `<aside>` | Contenu tangentiel | `<div className="sidebar">` |
+| `<footer>` | Pied de page | `<div className="footer">` |
+| `<button>` | Action cliquable | `<div onClick={}>` |
+| `<a>` | Lien de navigation | `<div onClick={}>` |
+| `<form>` | Formulaire | `<div>` avec inputs |
+
+### Fragments React
+
+```tsx
+// âœ… Utiliser des Fragments pour grouper sans div inutile
+function Component() {
+  return (
+    <>
+      <Header />
+      <Main />
+      <Footer />
+    </>
+  );
+}
+
+// âœ… Fragments avec key (dans les listes)
+function List({ items }: { items: Item[] }) {
+  return (
+    <>
+      {items.map(item => (
+        <React.Fragment key={item.id}>
+          <dt>{item.label}</dt>
+          <dd>{item.value}</dd>
+        </React.Fragment>
+      ))}
+    </>
+  );
+}
+```
+
+### AccessibilitÃ© (a11y)
+
+```tsx
+// âœ… Labels pour les inputs
+<label htmlFor="email">Email</label>
+<input id="email" type="email" />
+
+// âœ… ARIA pour les composants personnalisÃ©s
+<button
+  onClick={handleClose}
+  aria-label="Fermer la modale"
+  aria-expanded={isOpen}
+>
+  <CloseIcon />
+</button>
+
+// âœ… Roles ARIA si nÃ©cessaire
+<div role="alert" aria-live="assertive">
+  {errorMessage}
+</div>
+
+// âœ… Navigation au clavier
+<button
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      handleAction();
+    }
+  }}
+>
+  Action
+</button>
+```
+
+---
+
+## Conventions Next.js
+
+### App Router Structure
+
+```typescript
+// âœ… Utiliser la structure App Router de Next.js 14
+app/
+â”œâ”€â”€ (auth)/              // Route groupÃ©e (n'affecte pas l'URL)
+â”‚   â”œâ”€â”€ layout.tsx
+â”‚   â”œâ”€â”€ login/
+â”‚   â””â”€â”€ register/
+â”œâ”€â”€ (marketing)/         // Route groupÃ©e publique
+â”‚   â”œâ”€â”€ layout.tsx
+â”‚   â”œâ”€â”€ page.tsx         // Page d'accueil
+â”‚   â””â”€â”€ about/
+â”œâ”€â”€ dashboard/           // Routes protÃ©gÃ©es
+â”‚   â”œâ”€â”€ layout.tsx
+â”‚   â”œâ”€â”€ page.tsx
+â”‚   â””â”€â”€ cases/
+â”‚       â”œâ”€â”€ [id]/        // Route dynamique
+â”‚       â”‚   â””â”€â”€ page.tsx
+â”‚       â””â”€â”€ page.tsx
+â””â”€â”€ api/
+    â””â”€â”€ cases/
+        â””â”€â”€ route.ts     // API Route Handler
+```
+
+### Server vs Client Components
+
+```typescript
+// âœ… Par dÃ©faut : Server Components (pas de 'use client')
+// app/dashboard/page.tsx
+import { createClient } from '@/lib/supabase/server';
+
+export default async function DashboardPage() {
+  const supabase = createClient();
+  const { data: cases } = await supabase.from('cases').select('*');
+  
+  return <CaseList cases={cases} />;
+}
+
+// âœ… Client Component uniquement si nÃ©cessaire
+// components/case-list.tsx
+'use client'
+
+import { useState } from 'react';
+
+export function CaseList({ cases }: { cases: Case[] }) {
+  const [selected, setSelected] = useState<string | null>(null);
+  // ...
+}
+```
+
+### RÃ¨gles Client Components
+
+**Utiliser `'use client'` UNIQUEMENT si le composant a besoin de :**
+- Hooks React (useState, useEffect, etc.)
+- Event handlers (onClick, onChange, etc.)
+- Browser APIs (window, localStorage, etc.)
+- Context Providers ou Consumers
+
+### Data Fetching
+
+```typescript
+// âœ… Server Component : fetch directement
+export default async function Page() {
+  const data = await fetch('https://api.example.com/data', {
+    next: { revalidate: 3600 } // Cache 1h
+  });
+  return <Component data={data} />;
+}
+
+// âœ… Client Component : utiliser SWR ou React Query
+'use client'
+
+import useSWR from 'swr';
+
+export function ClientComponent() {
+  const { data, error } = useSWR('/api/cases', fetcher);
+  // ...
+}
+```
+
+### API Routes
+
+```typescript
+// app/api/cases/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+
+export async function GET(request: NextRequest) {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase
+    .from('cases')
+    .select('*');
+  
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  
+  return NextResponse.json(data);
+}
+
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  // Validation avec Zod
+  const validated = caseSchema.parse(body);
+  // ...
+}
+```
+
+### Conventions de nommage
+
+- **Pages** : `page.tsx` (obligatoire)
+- **Layouts** : `layout.tsx` (obligatoire)
+- **Loading UI** : `loading.tsx`
+- **Error UI** : `error.tsx`
+- **Not Found** : `not-found.tsx`
+- **Route handlers** : `route.ts`
+
+### Metadata pour SEO
+
+```typescript
+// app/layout.tsx ou page.tsx
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Formelio - FormalitÃ©s juridiques',
+  description: 'Service spÃ©cialisÃ© dans les formalitÃ©s complexes',
+  openGraph: {
+    title: 'Formelio',
+    description: 'Votre temps, notre prioritÃ©',
+    url: 'https://formelio.fr',
+    siteName: 'Formelio',
+    images: ['/og-image.png'],
+  },
+};
+```
+
+---
+
+## RÃ¨gles Supabase
+
+### âš ï¸ RÃˆGLES CRITIQUES SUPABASE
+
+```typescript
+// âŒ JAMAIS utiliser @supabase/auth-helpers-nextjs (DEPRECATED)
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'; // âŒ
+
+// âœ… TOUJOURS utiliser @supabase/ssr
+import { createServerClient } from '@supabase/ssr'; // âœ…
+
+// âŒ JAMAIS implÃ©menter les cookies manuellement
+const supabase = createServerClient(url, key, {
+  cookies: {
+    get(name) { return cookieStore.get(name) }, // âŒ BREAKS APP
+    set(name, value) { cookieStore.set(name, value) }, // âŒ BREAKS APP
+    remove(name) { cookieStore.remove(name) } // âŒ BREAKS APP
+  }
+});
+
+// âœ… TOUJOURS utiliser getAll/setAll
+const supabase = createServerClient(url, key, {
+  cookies: {
+    getAll() {
+      return cookieStore.getAll()
+    },
+    setAll(cookiesToSet) {
+      cookiesToSet.forEach(({ name, value, options }) =>
+        cookieStore.set(name, value, options)
+      )
+    },
+  },
+});
+```
+
+### Structure Supabase
+
+```typescript
+// lib/supabase/client.ts - Browser client
+import { createBrowserClient } from '@supabase/ssr';
+
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+}
+
+// lib/supabase/server.ts - Server client
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+
+export function createClient() {
+  const cookieStore = cookies();
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Server Component - ignore set cookies
+          }
+        },
+      },
+    }
+  );
+}
+
+// lib/supabase/middleware.ts - Middleware client
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
+
+export async function updateSession(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({ request });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            request.cookies.set(name, value)
+          );
+          supabaseResponse = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
+
+  // CRITICAL: Ne pas exÃ©cuter de code entre createServerClient et getUser
+  const { data: { user } } = await supabase.auth.getUser();
+
+  return supabaseResponse;
+}
+```
+
+### Row Level Security (RLS)
+
+```sql
+-- âœ… TOUJOURS activer RLS
+ALTER TABLE cases ENABLE ROW LEVEL SECURITY;
+
+-- âœ… Politique pour les lectures (SELECT)
+CREATE POLICY "Users can view their own cases"
+ON cases FOR SELECT
+USING (auth.uid() = user_id);
+
+-- âœ… Politique pour les modifications (UPDATE/DELETE)
+CREATE POLICY "Users can update their own cases"
+ON cases FOR UPDATE
+USING (auth.uid() = user_id);
+
+-- âœ… Optimisation RLS : wrapping auth.uid()
+CREATE POLICY "Optimized read policy"
+ON cases FOR SELECT
+USING (user_id = (SELECT auth.uid()));
+```
+
+### Bonnes pratiques Supabase
+
+```typescript
+// âœ… GÃ©rer les erreurs correctement
+const { data, error } = await supabase
+  .from('cases')
+  .select('*')
+  .eq('user_id', userId);
+
+if (error) {
+  console.error('Supabase error:', error);
+  throw new Error('Failed to fetch cases');
+}
+
+// âœ… Utiliser les types gÃ©nÃ©rÃ©s
+import type { Database } from '@/types/supabase';
+
+const supabase = createClient<Database>();
+
+// âœ… Transactions atomiques
+const { data, error } = await supabase.rpc('create_case_with_documents', {
+  case_data: { ... },
+  documents: [ ... ]
+});
+
+// âœ… Realtime subscriptions (cÃ´tÃ© client uniquement)
+'use client'
+
+useEffect(() => {
+  const channel = supabase
+    .channel('cases')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'cases' },
+      (payload) => {
+        console.log('New case:', payload);
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, []);
+```
+
+---
+
+## Styling avec Tailwind & Shadcn
+
+### Conventions Tailwind
+
+```tsx
+// âœ… Classes utilitaires de base
+<div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md">
+
+// âœ… Responsive design avec prÃ©fixes
+<div className="w-full md:w-1/2 lg:w-1/3">
+
+// âœ… States avec prÃ©fixes
+<button className="bg-blue-500 hover:bg-blue-600 focus:ring-2 focus:ring-blue-300 disabled:opacity-50">
+
+// âœ… Dark mode
+<div className="bg-white dark:bg-gray-800">
+
+// âœ… Utiliser clsx ou cn pour les classes conditionnelles
+import { cn } from '@/lib/utils';
+
+<button className={cn(
+  "px-4 py-2 rounded",
+  variant === 'primary' && "bg-blue-500 text-white",
+  variant === 'secondary' && "bg-gray-200 text-gray-900",
+  disabled && "opacity-50 cursor-not-allowed"
+)}>
+```
+
+### Shadcn UI
+
+```tsx
+// âœ… Importer depuis @/components/ui
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog';
+
+// âœ… Utiliser les variants de Shadcn
+<Button variant="default">Primary</Button>
+<Button variant="destructive">Delete</Button>
+<Button variant="outline">Cancel</Button>
+<Button variant="ghost">Link</Button>
+
+// âœ… Composer des composants
+<Card>
+  <CardHeader>
+    <h2>Title</h2>
+  </CardHeader>
+  <CardContent>
+    <p>Content</p>
+  </CardContent>
+</Card>
+```
+
+### Palette Formelio
+
+```typescript
+// tailwind.config.ts
+const config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#2E5F7E',
+          light: '#4A90B5',
+          dark: '#1E4A5F',
+        },
+        accent: {
+          DEFAULT: '#F59E0B',
+          light: '#FCD34D',
+          dark: '#D97706',
+        },
+      },
+      fontFamily: {
+        heading: ['Poppins', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
+      },
+    },
+  },
+};
+```
+
+---
+
+## Gestion d'Ã‰tat
+
+### HiÃ©rarchie de l'Ã©tat
+
+1. **URL State** (search params, slugs) - pour l'Ã©tat partageable
+2. **Local State** (useState) - pour l'UI local
+3. **Server State** (Supabase) - pour les donnÃ©es persistantes
+4. **Global State** (Context) - pour l'Ã©tat partagÃ© (auth, theme)
+
+### Local State
+
+```typescript
+// âœ… useState pour l'Ã©tat simple
+const [isOpen, setIsOpen] = useState(false);
+const [count, setCount] = useState(0);
+
+// âœ… useReducer pour l'Ã©tat complexe
+type State = {
+  loading: boolean;
+  error: string | null;
+  data: Case[] | null;
+};
+
+type Action =
+  | { type: 'FETCH_START' }
+  | { type: 'FETCH_SUCCESS'; payload: Case[] }
+  | { type: 'FETCH_ERROR'; error: string };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'FETCH_START':
+      return { ...state, loading: true, error: null };
+    case 'FETCH_SUCCESS':
+      return { loading: false, error: null, data: action.payload };
+    case 'FETCH_ERROR':
+      return { loading: false, error: action.error, data: null };
+    default:
+      return state;
+  }
+}
+
+function Component() {
+  const [state, dispatch] = useReducer(reducer, {
+    loading: false,
+    error: null,
+    data: null,
+  });
+  // ...
+}
+```
+
+### Context API
+
+```typescript
+// âœ… Utiliser Context uniquement pour l'Ã©tat global nÃ©cessaire
+// contexts/auth-context.tsx
+'use client'
+
+import { createContext, useContext, useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
+
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  signOut: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, loading, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+}
+```
+
+---
+
+## Tests
+
+### Structure des tests
+
+```typescript
+// components/__tests__/case-card.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { CaseCard } from '../case-card';
+
+describe('CaseCard', () => {
+  const mockCase = {
+    id: '1',
+    title: 'Test Case',
+    status: 'pending',
+    created_at: '2025-01-01',
+  };
+
+  it('renders case title', () => {
+    render(<CaseCard case={mockCase} />);
+    expect(screen.getByText('Test Case')).toBeInTheDocument();
+  });
+
+  it('calls onUpdate when button clicked', () => {
+    const onUpdate = jest.fn();
+    render(<CaseCard case={mockCase} onUpdate={onUpdate} />);
+    
+    fireEvent.click(screen.getByRole('button', { name: /update/i }));
+    expect(onUpdate).toHaveBeenCalledWith('1');
+  });
+});
+```
+
+### Bonnes pratiques tests
+
+- âœ… Un fichier de test par composant : `component.test.tsx`
+- âœ… Nommer les tests de faÃ§on descriptive
+- âœ… Tester le comportement, pas l'implÃ©mentation
+- âœ… Utiliser `screen.getByRole()` pour l'accessibilitÃ©
+- âœ… Mocker les appels Supabase
+
+---
+
+## Performance
+
+### Optimisations React
+
+```typescript
+// âœ… MÃ©moization avec useMemo
+const filteredCases = useMemo(
+  () => cases.filter(c => c.status === selectedStatus),
+  [cases, selectedStatus]
+);
+
+// âœ… Callbacks stables avec useCallback
+const handleDelete = useCallback(
+  (id: string) => {
+    deleteCaseById(id);
+  },
+  [deleteCaseById]
+);
+
+// âœ… Lazy loading avec dynamic import
+import dynamic from 'next/dynamic';
+
+const HeavyComponent = dynamic(() => import('./heavy-component'), {
+  loading: () => <LoadingSpinner />,
+});
+```
+
+### Images Next.js
+
+```tsx
+import Image from 'next/image';
+
+// âœ… Toujours utiliser next/image
+<Image
+  src="/logo.png"
+  alt="Formelio Logo"
+  width={200}
+  height={100}
+  priority // Pour les images above-the-fold
+/>
+```
+
+---
+
+## SÃ©curitÃ© & RGPD
+
+### Variables d'environnement
+
+```bash
+# âœ… Publiques (prÃ©fixe NEXT_PUBLIC_)
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=xxx
+
+# âœ… PrivÃ©es (cÃ´tÃ© serveur uniquement)
+SUPABASE_SERVICE_ROLE_KEY=xxx
+STRIPE_SECRET_KEY=xxx
+```
+
+### Validation des donnÃ©es
+
+```typescript
+// lib/validations/case.ts
+import { z } from 'zod';
+
+export const caseSchema = z.object({
+  title: z.string().min(3).max(100),
+  description: z.string().max(1000),
+  type: z.enum(['rejected', 'complex', 'audit']),
+  user_id: z.string().uuid(),
+});
+
+export type CaseInput = z.infer<typeof caseSchema>;
+
+// Utilisation dans API route
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  
+  try {
+    const validated = caseSchema.parse(body);
+    // Traitement sÃ©curisÃ©
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ errors: error.errors }, { status: 400 });
+    }
+  }
+}
+```
+
+### RGPD
+
+```typescript
+// âœ… Consentement cookies
+// components/cookie-consent.tsx
+'use client'
+
+export function CookieConsent() {
+  const [consent, setConsent] = useState<boolean | null>(null);
+  
+  // ImplÃ©menter le bandeau de consentement
+  // Stocker le choix dans localStorage
+  // Ne charger les trackers qu'aprÃ¨s consentement
+}
+
+// âœ… Anonymisation des logs
+function logUserAction(userId: string, action: string) {
+  const anonymizedId = hash(userId);
+  console.log(`User ${anonymizedId} performed ${action}`);
+}
+```
+
+---
+
+## ðŸŽ¯ Checklist Avant Commit
+
+- [ ] Aucun `any` ou `as any` dans le code
+- [ ] Tous les types sont explicites
+- [ ] Pas de divs imbriquÃ©es inutiles, balises sÃ©mantiques utilisÃ©es
+- [ ] Aucun fichier > 300 lignes
+- [ ] Aucun doublon de code (vÃ©rifier les hooks customs)
+- [ ] Tests passent : `npm test`
+- [ ] Linting OK : `npm run lint`
+- [ ] TypeScript compile : `npm run type-check`
+- [ ] Build rÃ©ussit : `npm run build`
+
+---
+
+## ðŸ“ž Support & Ressources
+
+**Documentation** :
+- Next.js : https://nextjs.org/docs
+- Supabase : https://supabase.com/docs
+- Shadcn UI : https://ui.shadcn.com
+- Tailwind : https://tailwindcss.com
+
+**Projet** :
+- Cahier des charges : `../docs/02-project-management/cahier_des_charges_formelio.md`
+- Tasks : `../docs/03-development/tasks/`
+
+---
+
+**Version** : 1.0  
+**DerniÃ¨re mise Ã  jour** : Octobre 2025  
+**Projet** : Formelio
