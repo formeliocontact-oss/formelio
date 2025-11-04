@@ -57,7 +57,12 @@ rg ".*Service" lib/services/
 | **Type Definition** | `types/[domain].ts` | `types/case.ts` | `rg "interface\|type" types/` |
 | **Zod Schema** | `lib/validations/[domain].ts` | `lib/validations/case.ts` | `rg "z\.object" lib/validations/` |
 | **Constant** | `lib/constants.ts` or `lib/[domain]-constants.ts` | `lib/case-constants.ts` | `rg "const.*=.*as const" lib/` |
+| **Environment Config** | `lib/env.ts` | `lib/env.ts` | Fixed file |
 | **Supabase Client** | `lib/supabase/[client\|server\|middleware].ts` | `lib/supabase/client.ts` | Fixed files |
+| **i18n Messages** | `i18n/messages/[locale].json` | `i18n/messages/fr.json` | Fixed structure |
+| **i18n Config** | `i18n/request.ts` | `i18n/request.ts` | Fixed file |
+| **Storybook Story** | `stories/[ComponentName].stories.tsx` | `stories/Button.stories.tsx` | `rg "Meta\|Story" stories/` |
+| **Test Setup** | `test/setup.ts` | `test/setup.ts` | Fixed file |
 | **Test File** | Next to source: `[name].test.ts(x)` | `case-card.test.tsx` | `rg "describe\|test\|it" --type test` |
 
 ---
@@ -117,6 +122,52 @@ START
   │
   └─ Complex business logic?
       → Service class/functions in `lib/services/[domain]-service.ts`
+```
+
+### "I need to create a form..." (react-hook-form + Zod)
+
+```
+START
+  │
+  ├─ Do I need validation?
+  │   YES ↓
+  │   1. Create Zod schema in `lib/validations/[domain].ts`
+  │   2. Create form component in `components/forms/[name]-form.tsx`
+  │   3. Use `useForm()` with `zodResolver(schema)`
+  │
+  └─ Simple form without validation?
+      → Still use react-hook-form in `components/forms/`
+      → Pattern documented in CLAUDE-patterns.md
+```
+
+### "I need to add translations..." (next-intl)
+
+```
+START
+  │
+  ├─ User-facing text?
+  │   YES ↓
+  │   1. Add key to `i18n/messages/fr.json`
+  │   2. Use `useTranslations('namespace')` hook
+  │   3. Never hardcode strings in components
+  │
+  └─ Internal/dev text (console.log, errors)?
+      → OK to hardcode (not user-facing)
+```
+
+### "I need to document a component..." (Storybook)
+
+```
+START
+  │
+  ├─ Is it reusable UI component?
+  │   YES ↓
+  │   1. Create story in `stories/[ComponentName].stories.tsx`
+  │   2. Document all variants (Default, Outline, Disabled, etc.)
+  │   3. Add to Storybook with `npm run storybook`
+  │
+  └─ Feature-specific or page component?
+      → Storybook optional (but recommended for complex ones)
 ```
 
 ---

@@ -338,6 +338,81 @@ Add a new pattern to this file when:
 
 ---
 
+## 📝 Form Pattern with react-hook-form + Zod (Context7 Verified)
+
+**When to use**: All forms requiring validation
+
+**Location**: `components/forms/[name]-form.tsx`
+
+**Context7 Verified**: 2025-11-03
+
+**Template**:
+```typescript
+'use client'
+
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+const schema = z.object({
+  field: z.string().min(1, 'Required'),
+});
+
+type FormData = z.infer<typeof schema>;
+
+export function MyForm({ onSubmit }: { onSubmit: (data: FormData) => Promise<void> }) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {/* Form fields */}
+    </form>
+  );
+}
+```
+
+**Key points**:
+- Schema in `lib/validations/`
+- `zodResolver` for validation
+- `isSubmitting` for loading state
+- Shadcn UI components
+
+---
+
+## 🌐 i18n Pattern with next-intl (Context7 Verified)
+
+**When to use**: All user-facing strings
+
+**Location**: Component any, messages in `i18n/messages/[locale].json`
+
+**Context7 Verified**: 2025-11-03
+
+**Template**:
+```typescript
+'use client'
+
+import { useTranslations } from 'next-intl';
+
+export function MyComponent() {
+  const t = useTranslations('namespace');
+
+  return <button>{t('submit')}</button>;
+}
+```
+
+**Key points**:
+- `useTranslations` hook
+- Namespace organization
+- JSON message files (fr.json, en.json)
+
+---
+
 ## 🔍 Pattern Search Tips
 
 Use `code-searcher` subagent or search manually:

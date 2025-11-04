@@ -245,6 +245,69 @@
 
 ---
 
+### DEC-008: Use Next.js 15 and React 19
+
+**Date**: Novembre 2025
+**Status**: ✅ Adopted
+
+**Context**: Next.js 15 and React 19 provide latest features and performance improvements.
+
+**Decision**: Use Next.js 15.0.0 and React 19.0.0 as base framework.
+
+**Rationale**:
+- ✅ Latest Next.js App Router features
+- ✅ React 19 hooks and improvements
+- ✅ Better performance
+- ✅ Context7 verified patterns
+- ❌ Next.js 14 rejected (older version)
+
+**Consequences**:
+- Use async cookies() from next/headers
+- Follow Context7 patterns for latest APIs
+- Update docs to reflect Next.js 15
+
+**Related**:
+- Rule: [NEXTJS_RULES.md](rules/NEXTJS_RULES.md)
+- Context7: Patterns verified
+
+---
+
+### DEC-009: Adopt NSS Boilerplate Patterns with Context7 Verification
+
+**Date**: Novembre 2025
+**Status**: ✅ Adopted
+
+**Context**: Need production-ready patterns while maintaining strict type safety and code quality.
+
+**Decision**: Adopt NSS Boilerplate patterns verified with Context7 for:
+- Form handling (react-hook-form + Zod)
+- Authentication (Supabase SSR + middleware)
+- Internationalization (next-intl FR-only initially)
+- Component documentation (Storybook)
+- Testing (Vitest + Cypress)
+
+**Rationale**:
+- ✅ Patterns align with ARCHITECTURE_RULES.md
+- ✅ Context7 verification ensures up-to-date APIs
+- ✅ Testing setup matches quality requirements
+- ✅ i18n ready for future multi-language (FR-only MVP)
+- ✅ Storybook documents components
+- ❌ Building from scratch rejected (time consuming)
+
+**Consequences**:
+- react-hook-form is standard for forms
+- Zod for all runtime validation
+- next-intl for all user-facing strings (FR-only initially, ready for EN)
+- Storybook mandatory for reusable components
+- Testing coverage required (unit + E2E)
+
+**Related**:
+- Pattern: [CLAUDE-patterns.md](CLAUDE-patterns.md)
+- Source NSS: https://github.com/tractr/nss-boilerplate
+- Context7: Live documentation verification
+
+---
+
 ## 🚧 Proposed Decisions
 
 (None currently)
@@ -312,6 +375,41 @@ rg "Consequences.*component|hook|service" .claude/CLAUDE-decisions.md
 
 ---
 
+### DEC-010: Use Tailwind CSS v4 with @tailwindcss/postcss Bridge
+
+**Date**: Novembre 2025
+**Status**: ✅ Adopted
+
+**Context**: Tailwind CSS v4.0 (released January 2025) introduced breaking changes with CSS-first configuration, removing `tailwind.config.js` and introducing new directives (`@import`, `@theme`, `@plugin`). Shadcn UI is in transition to v4, and the CLI generates mixed v3/v4 syntax that doesn't work out-of-the-box.
+
+**Decision**: Use `@tailwindcss/postcss` bridge plugin to maintain compatibility between Tailwind v3 syntax and v4 packages, avoiding pure v4 CSS-first syntax until ecosystem stabilizes.
+
+**Rationale**:
+- ✅ Build works without errors
+- ✅ Shadcn UI components fully compatible
+- ✅ Next.js 15 compatible
+- ✅ No complex CSS refactoring needed
+- ✅ TypeScript strict mode works
+- ✅ Can migrate to pure v4 later when stable
+- ❌ Pure v4 syntax rejected (Shadcn UI not fully ready, community in transition)
+- ❌ Staying on v3 rejected (want latest features and future-proofing)
+
+**Consequences**:
+- Use `@tailwindcss/postcss` in postcss.config.mjs instead of direct `tailwindcss`
+- Keep v3 syntax in globals.css (`@tailwind` directives, not `@import`)
+- No `tailwind.config.js` file (CSS variables directly in globals.css)
+- Cannot use pure v4 features (`@theme`, `@plugin`, `@custom-variant`) yet
+- No `tw-animate-css` (use `tailwindcss-animate` if animations needed)
+- Migration path to pure v4 documented for when ecosystem stabilizes (Q2 2025)
+
+**Related**:
+- Documentation: [TAILWIND_V4_COMPATIBILITY.md](TAILWIND_V4_COMPATIBILITY.md)
+- Package: `tailwindcss@4.1.16`
+- Bridge: `@tailwindcss/postcss`
+- Migration target: Q2 2025 (when Shadcn UI fully stable on v4)
+
+---
+
 **Last Updated**: Novembre 2025
-**Active Decisions**: 7
+**Active Decisions**: 10
 **Rejected Decisions**: 2

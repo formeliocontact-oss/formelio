@@ -175,6 +175,32 @@ rg ".*Service" lib/services/
 - Accessibility (a11y) compliance
 - **Details**: [rules/HTML_SEMANTIC_RULES.md](rules/HTML_SEMANTIC_RULES.md)
 
+### Forms (react-hook-form + Zod)
+- Use `react-hook-form` for ALL forms
+- Validate with Zod schemas in `lib/validations/`
+- Use `zodResolver` for integration
+- Pattern in `components/forms/[name]-form.tsx`
+- **Details**: [CLAUDE-patterns.md](CLAUDE-patterns.md)
+
+### Internationalization (next-intl)
+- ALL user-facing text in `i18n/messages/fr.json`
+- Use `useTranslations()` hook
+- FR-only for MVP (ready for EN)
+- NEVER hardcode strings in components
+- **Details**: [CLAUDE-patterns.md](CLAUDE-patterns.md)
+
+### Tailwind CSS v4
+- Use `@tailwindcss/postcss` bridge (NOT pure v4)
+- v3 syntax (`@tailwind`) in globals.css
+- NO `@import`, `@theme`, `@plugin` directives
+- **Details**: [TAILWIND_V4_COMPATIBILITY.md](TAILWIND_V4_COMPATIBILITY.md)
+
+### Testing & Documentation
+- Unit tests with Vitest (next to source files)
+- E2E tests with Cypress in `cypress/e2e/`
+- Storybook for reusable UI components
+- Stories in `stories/[Name].stories.tsx`
+
 ---
 
 ## 📋 Pre-Commit Checklist

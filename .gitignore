@@ -35,6 +35,24 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Testing
+/coverage
+cypress/videos/
+cypress/screenshots/
+.vitest-cache/
+
+# Storybook
+storybook-static/
+
+# Supabase
+src/types/supabase.ts
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
 # claude code local settings
 .claude/settings.local.json
 .claude/*.backup*
