@@ -47,7 +47,7 @@ Ce projet utilise **Tailwind CSS v4** avec le plugin bridge `@tailwindcss/postcs
 - ❌ Pas de `@theme`, `@plugin`, `@custom-variant`
 - ❌ Pas de `tw-animate-css`
 
-📖 **Documentation détaillée**: [.claude/TAILWIND_V4_COMPATIBILITY.md](.claude/TAILWIND_V4_COMPATIBILITY.md)
+📖 **Documentation détaillée**: [.claude/archive/TAILWIND_V4_COMPATIBILITY.md](.claude/archive/TAILWIND_V4_COMPATIBILITY.md)
 
 ## Démarrage
 
@@ -116,12 +116,14 @@ formeliosaas/
 
 ```
 formeliosaas/
-├── .claude/                         # Documentation projet et règles
-│   ├── CLAUDE.md                   # Règles principales
-│   ├── CLAUDE-decisions.md         # Décisions architecturales
-│   ├── CLAUDE-patterns.md          # Patterns établis
-│   ├── TAILWIND_V4_COMPATIBILITY.md # Doc Tailwind v4
-│   └── rules/                      # Règles détaillées
+├── .claude/                         # Documentation projet
+│   ├── CLAUDE.md                   # Quick Reference (optimisé IA)
+│   ├── archive/                    # Documentation détaillée archivée
+│   │   ├── PATTERNS.md            # Patterns complets
+│   │   ├── DECISIONS.md           # Décisions architecturales
+│   │   ├── TAILWIND_V4_COMPATIBILITY.md
+│   │   └── rules/                 # Règles détaillées
+│   └── agents/                     # Agents Claude Code
 ├── .husky/                         # Git hooks (pre-commit)
 ├── .storybook/                     # Config Storybook
 ├── cypress/                        # Tests E2E
@@ -192,23 +194,28 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 ## 📖 Documentation
 
-### Règles du Projet
+### Pour Développeurs
 
-- **[.claude/CLAUDE.md](.claude/CLAUDE.md)** - Règles principales (LIRE EN PREMIER)
-- **[.claude/CLAUDE-decisions.md](.claude/CLAUDE-decisions.md)** - Décisions architecturales documentées
-- **[.claude/CLAUDE-patterns.md](.claude/CLAUDE-patterns.md)** - Patterns de code établis
+- **[.claude/CLAUDE.md](.claude/CLAUDE.md)** - Quick Reference condensé (optimisé pour IA)
+  - Règles critiques P0
+  - Stack & locations
+  - Patterns minimaux (syntaxe uniquement)
+  - Search commands
 
-### Règles Détaillées
+### Documentation Détaillée (Archive)
 
-- **[.claude/rules/ARCHITECTURE_RULES.md](.claude/rules/ARCHITECTURE_RULES.md)** - Anti-duplication, structure
-- **[.claude/rules/TYPESCRIPT_RULES.md](.claude/rules/TYPESCRIPT_RULES.md)** - TypeScript strict
-- **[.claude/rules/SUPABASE_RULES.md](.claude/rules/SUPABASE_RULES.md)** - Patterns Supabase SSR
-- **[.claude/rules/HTML_SEMANTIC_RULES.md](.claude/rules/HTML_SEMANTIC_RULES.md)** - HTML sémantique
-- **[.claude/rules/NEXTJS_RULES.md](.claude/rules/NEXTJS_RULES.md)** - Server vs Client Components
+Documentation complète archivée pour référence humaine:
 
-### Spécifique
+- **[.claude/archive/PATTERNS.md](.claude/archive/PATTERNS.md)** - Patterns de code complets avec exemples
+- **[.claude/archive/DECISIONS.md](.claude/archive/DECISIONS.md)** - Décisions architecturales documentées
+- **[.claude/archive/TAILWIND_V4_COMPATIBILITY.md](.claude/archive/TAILWIND_V4_COMPATIBILITY.md)** - Deep-dive Tailwind v4
 
-- **[.claude/TAILWIND_V4_COMPATIBILITY.md](.claude/TAILWIND_V4_COMPATIBILITY.md)** - Explications Tailwind v4
+**Règles détaillées**:
+- [ARCHITECTURE_RULES.md](.claude/archive/rules/ARCHITECTURE_RULES.md) - Anti-duplication, structure
+- [TYPESCRIPT_RULES.md](.claude/archive/rules/TYPESCRIPT_RULES.md) - TypeScript strict
+- [SUPABASE_RULES.md](.claude/archive/rules/SUPABASE_RULES.md) - Patterns Supabase SSR
+- [HTML_SEMANTIC_RULES.md](.claude/archive/rules/HTML_SEMANTIC_RULES.md) - HTML sémantique
+- [NEXTJS_RULES.md](.claude/archive/rules/NEXTJS_RULES.md) - Server vs Client Components
 
 ## Contribuer
 

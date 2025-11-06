@@ -22,7 +22,16 @@
       "Bash(npm run format:check:*)",
       "Bash(npm run format:*)",
       "Bash(npm run test:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(claude mcp --help:*)",
+      "Bash(claude mcp remove:*)",
+      "Bash(claude mcp get:*)",
+      "Bash(npx:*)",
+      "Bash(ren:*)",
+      "Bash(find:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": []
