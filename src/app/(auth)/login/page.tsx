@@ -45,7 +45,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-muted px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Connexion</CardTitle>
@@ -56,7 +56,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             {serverError && (
-              <div className="rounded-md bg-red-50 p-3 text-sm text-red-800">
+              <div className="rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive">
                 {serverError}
               </div>
             )}
@@ -71,7 +71,9 @@ export default function LoginPage() {
                 aria-invalid={errors.email ? 'true' : 'false'}
               />
               {errors.email && (
-                <p className="text-sm text-red-600">{errors.email.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -85,7 +87,7 @@ export default function LoginPage() {
                 aria-invalid={errors.password ? 'true' : 'false'}
               />
               {errors.password && (
-                <p className="text-sm text-red-600">
+                <p className="text-sm text-destructive">
                   {errors.password.message}
                 </p>
               )}
@@ -97,11 +99,11 @@ export default function LoginPage() {
               {isSubmitting ? 'Connexion...' : 'Se connecter'}
             </Button>
 
-            <p className="text-center text-sm text-gray-600">
+            <p className="text-center text-sm text-muted-foreground">
               Pas encore de compte ?{' '}
               <Link
                 href="/signup"
-                className="font-medium text-blue-600 hover:underline"
+                className="font-medium text-primary hover:underline"
               >
                 S&apos;inscrire
               </Link>

@@ -189,6 +189,9 @@ rg "Schema.*z\.object" lib/validations/    # Validations
 
 ## 📚 Detailed Docs (Human Reference)
 
+**Design & UI**:
+- [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) - Color palette, typography, spacing tokens
+
 **Archived**:
 - [archive/PATTERNS.md](archive/PATTERNS.md) - Full pattern templates
 - [archive/DECISIONS.md](archive/DECISIONS.md) - Architecture decisions
@@ -200,5 +203,5 @@ rg "Schema.*z\.object" lib/validations/    # Validations
 
 **Philosophy**: Pragmatic over perfect. Ship fast, iterate.
 
-**Last Updated**: 2025-11-05
-**Lines**: 149
+**Last Updated**: 2025-11-10
+**Lines**: 152

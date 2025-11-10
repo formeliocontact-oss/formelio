@@ -49,7 +49,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-muted px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Inscription</CardTitle>
@@ -60,13 +60,13 @@ export default function SignupPage() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             {serverError && (
-              <div className="rounded-md bg-red-50 p-3 text-sm text-red-800">
+              <div className="rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive">
                 {serverError}
               </div>
             )}
 
             {success && (
-              <div className="rounded-md bg-green-50 p-3 text-sm text-green-800">
+              <div className="rounded-md border border-success bg-success/10 p-3 text-sm text-success-foreground">
                 {success}
               </div>
             )}
@@ -81,7 +81,9 @@ export default function SignupPage() {
                 aria-invalid={errors.email ? 'true' : 'false'}
               />
               {errors.email && (
-                <p className="text-sm text-red-600">{errors.email.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -95,7 +97,7 @@ export default function SignupPage() {
                 aria-invalid={errors.password ? 'true' : 'false'}
               />
               {errors.password && (
-                <p className="text-sm text-red-600">
+                <p className="text-sm text-destructive">
                   {errors.password.message}
                 </p>
               )}
@@ -111,7 +113,7 @@ export default function SignupPage() {
                 aria-invalid={errors.confirmPassword ? 'true' : 'false'}
               />
               {errors.confirmPassword && (
-                <p className="text-sm text-red-600">
+                <p className="text-sm text-destructive">
                   {errors.confirmPassword.message}
                 </p>
               )}
@@ -123,11 +125,11 @@ export default function SignupPage() {
               {isSubmitting ? 'Inscription...' : "S'inscrire"}
             </Button>
 
-            <p className="text-center text-sm text-gray-600">
+            <p className="text-center text-sm text-muted-foreground">
               Déjà un compte ?{' '}
               <Link
                 href="/login"
-                className="font-medium text-blue-600 hover:underline"
+                className="font-medium text-primary hover:underline"
               >
                 Se connecter
               </Link>
