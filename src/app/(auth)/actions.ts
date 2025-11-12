@@ -121,3 +121,122 @@ export async function signout() {
   revalidatePath('/', 'layout');
   redirect('/login');
 }
+
+export async function resetPasswordRequest(formData: FormData) {
+  const supabase = await createClient();
+
+  const email = formData.get('email') as string;
+
+  if (!email) {
+    throw new ValidationError('Email requis');
+  }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env['NEXT_PUBLIC_APP_URL']}/reset-password`,
+  });
+
+  if (error) {
+    // Ne pas révéler si l'email existe ou non (sécurité)
+    console.error('Reset password error:', error);
+  }
+
+  return {
+    success:
+      'Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.',
+  };
+}
+
+export async function updatePassword(formData: FormData) {
+  const supabase = await createClient();
+
+  const password = formData.get('password') as string;
+
+  if (!password) {
+    throw new ValidationError('Mot de passe requis');
+  }
+
+  if (password.length < 8) {
+    throw new ValidationError('Mot de passe minimum 8 caractères');
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    password,
+  });
+
+  if (error) {
+    if (error.message.includes('same as the old password')) {
+      throw new ValidationError(
+        "Le nouveau mot de passe doit être différent de l'ancien"
+      );
+    }
+    throw new SupabaseError('Erreur lors de la mise à jour du mot de passe');
+  }
+
+  revalidatePath('/', 'layout');
+  redirect('/dashboard');
+}
+
+export async function updateProfile(formData: FormData) {
+  const supabase = await createClient();
+
+  const email = formData.get('email') as string;
+  const currentPassword = formData.get('currentPassword') as string;
+  const newPassword = formData.get('newPassword') as string;
+
+  // Vérifier que l'utilisateur est connecté
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    throw new AuthenticationError('Vous devez être connecté');
+  }
+
+  // Si changement de mot de passe, vérifier l'ancien
+  if (newPassword && currentPassword) {
+    // Re-authentifier avec le mot de passe actuel
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: user.email!,
+      password: currentPassword,
+    });
+
+    if (signInError) {
+      throw new AuthenticationError('Mot de passe actuel incorrect');
+    }
+
+    // Mettre à jour le mot de passe
+    const { error: passwordError } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (passwordError) {
+      if (passwordError.message.includes('same as the old password')) {
+        throw new ValidationError(
+          "Le nouveau mot de passe doit être différent de l'ancien"
+        );
+      }
+      throw new SupabaseError('Erreur lors de la mise à jour du mot de passe');
+    }
+  }
+
+  // Mettre à jour l'email si fourni
+  if (email && email !== user.email) {
+    const { error: emailError } = await supabase.auth.updateUser({
+      email,
+    });
+
+    if (emailError) {
+      throw new SupabaseError("Erreur lors de la mise à jour de l'email");
+    }
+
+    return {
+      success:
+        'Profil mis à jour. Un email de confirmation a été envoyé à votre nouvelle adresse.',
+    };
+  }
+
+  return {
+    success: 'Profil mis à jour avec succès',
+  };
+}

@@ -3,6 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,39 +16,45 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { loginSchema, type LoginInput } from '@/lib/validations/auth';
-import { login } from '../actions';
+import {
+  forgotPasswordSchema,
+  type ForgotPasswordInput,
+} from '@/lib/validations/auth';
+import { resetPasswordRequest } from '../actions';
 import { useSafeAction } from '@/hooks/use-safe-action';
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   const { execute, loading } = useSafeAction({
-    showToast: true, // Affiche automatiquement les erreurs avec toast
+    showToast: false, // On gère le toast manuellement pour ce cas
+    onSuccess: () => {
+      toast.success(
+        'Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.'
+      );
+    },
   });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<ForgotPasswordInput>({
+    resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const onSubmit = async (data: LoginInput) => {
+  const onSubmit = async (data: ForgotPasswordInput) => {
     const formData = new FormData();
     formData.append('email', data.email);
-    formData.append('password', data.password);
 
-    // useSafeAction gère automatiquement les erreurs et la redirection
-    await execute(login, formData);
+    await execute(resetPasswordRequest, formData);
   };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Connexion</CardTitle>
+          <CardTitle>Mot de passe oublié</CardTitle>
           <CardDescription>
-            Connectez-vous à votre compte Formelio
+            Entrez votre email pour recevoir un lien de réinitialisation
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -67,44 +74,20 @@ export default function LoginPage() {
                 </p>
               )}
             </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Mot de passe</Label>
-                <Link
-                  href="/forgot-password"
-                  className="text-sm font-medium text-primary hover:underline"
-                >
-                  Mot de passe oublié ?
-                </Link>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                {...register('password')}
-                aria-invalid={errors.password ? 'true' : 'false'}
-              />
-              {errors.password && (
-                <p className="text-sm text-destructive">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
           </CardContent>
 
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Connexion...' : 'Se connecter'}
+              {loading ? 'Envoi...' : 'Envoyer le lien'}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
-              Pas encore de compte ?{' '}
+              Retour à la{' '}
               <Link
-                href="/signup"
+                href="/login"
                 className="font-medium text-primary hover:underline"
               >
-                S&apos;inscrire
+                connexion
               </Link>
             </p>
           </CardFooter>
