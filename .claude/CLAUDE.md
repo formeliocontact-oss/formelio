@@ -192,6 +192,9 @@ rg "Schema.*z\.object" lib/validations/    # Validations
 **Design & UI**:
 - [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) - Color palette, typography, spacing tokens
 
+**Error Handling**:
+- [ERROR_HANDLING_GUIDE.md](../docs/03-development/ERROR_HANDLING_GUIDE.md) - Error types, patterns, useSafeAction
+
 **Archived**:
 - [archive/PATTERNS.md](archive/PATTERNS.md) - Full pattern templates
 - [archive/DECISIONS.md](archive/DECISIONS.md) - Architecture decisions
