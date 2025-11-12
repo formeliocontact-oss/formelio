@@ -51,117 +51,17 @@
 
 ---
 
-## 🔍 Code Patterns (Minimal Syntax)
+## 🔍 Code Patterns
 
-### Server Component (default)
-```typescript
-// app/page.tsx (no 'use client')
-export default async function Page() {
-  const data = await fetchData()
-  return <div>{data}</div>
-}
-```
+**Full templates with examples** → See [archive/PATTERNS.md](archive/PATTERNS.md)
 
-### Client Component
-```typescript
-// components/features/cases/case-card.tsx
-'use client'
-import { useState } from 'react'
-
-export function CaseCard({ case: caseData }: CaseCardProps) {
-  const [loading, setLoading] = useState(false)
-  return <article>{caseData.title}</article>
-}
-```
-
-### Data Fetch Hook
-```typescript
-// hooks/use-cases.ts
-'use client'
-import { createClient } from '@/lib/supabase/client'
-
-export function useCases() {
-  const [data, setData] = useState<Case[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function fetch() {
-      const supabase = createClient()
-      const { data, error } = await supabase.from('cases').select('*')
-      if (error) setError(error.message)
-      else setData(data || [])
-      setLoading(false)
-    }
-    fetch()
-  }, [])
-
-  return { data, loading, error }
-}
-```
-
-### Form (react-hook-form + Zod)
-```typescript
-// components/forms/case-form.tsx
-'use client'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-
-export function CaseForm({ onSubmit }: { onSubmit: (data: FormData) => Promise<void> }) {
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
-    resolver: zodResolver(schema)
-  })
-  return <form onSubmit={handleSubmit(onSubmit)}>{/* fields */}</form>
-}
-```
-
-### Service (Business Logic)
-```typescript
-// lib/services/case-service.ts
-import { createClient } from '@/lib/supabase/server'
-
-export class CaseService {
-  private supabase = createClient()
-
-  async getCaseById(id: string): Promise<Case | null> {
-    const { data, error } = await this.supabase.from('cases').select('*').eq('id', id).single()
-    if (error) return null
-    return data
-  }
-}
-
-export const caseService = new CaseService()
-```
-
-### Types
-```typescript
-// types/case.ts
-export interface Case {
-  id: string
-  title: string
-  status: CaseStatus
-  user_id: string
-  created_at: string
-  updated_at: string
-}
-
-export type CaseStatus = 'pending' | 'in_progress' | 'completed'
-export type CaseInput = Omit<Case, 'id' | 'created_at' | 'updated_at'>
-```
-
-### Validation
-```typescript
-// lib/validations/case.ts
-import { z } from 'zod'
-
-export const caseSchema = z.object({
-  title: z.string().min(3).max(100),
-  status: z.enum(['pending', 'in_progress', 'completed']),
-  user_id: z.string().uuid(),
-})
-
-export type CaseInput = z.infer<typeof caseSchema>
-```
+Quick syntax reminders:
+- **Server Component** (default): No `'use client'`, can `await` data
+- **Client Component**: Add `'use client'`, can use hooks/events
+- **Hooks**: Return `{ data, loading, error }` pattern
+- **Services**: Class with private `supabase`, export singleton
+- **Types**: Interface for entities, Type for unions
+- **Validation**: Zod schemas in `lib/validations/`
 
 ---
 
@@ -206,5 +106,5 @@ rg "Schema.*z\.object" lib/validations/    # Validations
 
 **Philosophy**: Pragmatic over perfect. Ship fast, iterate.
 
-**Last Updated**: 2025-11-10
-**Lines**: 152
+**Last Updated**: 2025-11-12
+**Lines**: ~100 (Optimized for token efficiency)
