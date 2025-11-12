@@ -10,10 +10,10 @@ import {
 
 export default function AboutPage() {
   return (
-    <div className="py-20">
+    <article className="py-20">
       <div className="container mx-auto max-w-4xl px-4">
         {/* Hero */}
-        <div className="mb-16 text-center">
+        <header className="mb-16 text-center">
           <h1 className="mb-4 text-4xl font-heading font-bold">
             Une expertise unique au service des professionnels
           </h1>
@@ -21,31 +21,35 @@ export default function AboutPage() {
             Ancien du greffe du tribunal de commerce, diplômé en droit de
             l&apos;Université de Montpellier
           </p>
-        </div>
+        </header>
 
         {/* Parcours */}
         <section className="mb-16">
           <h2 className="mb-6 text-2xl font-semibold">Parcours</h2>
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>🎓 Formation juridique</CardTitle>
-                <CardDescription>
-                  Diplôme en droit de l&apos;Université de Montpellier,
-                  spécialisation en droit des sociétés
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>🏛️ Expérience au greffe RCS</CardTitle>
-                <CardDescription>
-                  Plusieurs années au service du Registre du Commerce et des
-                  Sociétés, connaissance approfondie des processus internes
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
+          <ul className="space-y-4" role="list">
+            <li>
+              <Card>
+                <CardHeader>
+                  <CardTitle>🎓 Formation juridique</CardTitle>
+                  <CardDescription>
+                    Diplôme en droit de l&apos;Université de Montpellier,
+                    spécialisation en droit des sociétés
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </li>
+            <li>
+              <Card>
+                <CardHeader>
+                  <CardTitle>🏛️ Expérience au greffe RCS</CardTitle>
+                  <CardDescription>
+                    Plusieurs années au service du Registre du Commerce et des
+                    Sociétés, connaissance approfondie des processus internes
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </li>
+          </ul>
         </section>
 
         {/* Expertise */}
@@ -56,35 +60,35 @@ export default function AboutPage() {
           <ul className="space-y-4">
             <li className="flex items-start">
               <CheckCircle2 className="mt-0.5 mr-3 h-6 w-6 flex-shrink-0 text-primary" />
-              <div>
+              <p>
                 <strong>Connaissance insider :</strong> Compréhension profonde
                 des rouages administratifs du greffe
-              </div>
+              </p>
             </li>
             <li className="flex items-start">
               <CheckCircle2 className="mt-0.5 mr-3 h-6 w-6 flex-shrink-0 text-primary" />
-              <div>
+              <p>
                 <strong>Divergences bases de données :</strong> Maîtrise des
                 incohérences entre RNE, RCS et INSEE
-              </div>
+              </p>
             </li>
             <li className="flex items-start">
               <CheckCircle2 className="mt-0.5 mr-3 h-6 w-6 flex-shrink-0 text-primary" />
-              <div>
+              <p>
                 <strong>Causes de rejet :</strong> Identification rapide des
                 raisons de blocage
-              </div>
+              </p>
             </li>
           </ul>
         </section>
 
         {/* CTA */}
-        <div className="text-center">
+        <footer className="text-center">
           <Button size="lg" asChild>
             <Link href="/contact">Discutons de votre situation</Link>
           </Button>
-        </div>
+        </footer>
       </div>
-    </div>
+    </article>
   );
 }

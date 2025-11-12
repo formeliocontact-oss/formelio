@@ -60,14 +60,16 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="py-20">
+    <article className="py-20">
       <div className="container mx-auto max-w-2xl px-4">
-        <h1 className="mb-4 text-center text-4xl font-heading font-bold">
-          Contactez-nous
-        </h1>
-        <p className="mb-12 text-center text-gray-600">
-          Décrivez votre situation, nous vous répondons sous 24h
-        </p>
+        <header className="mb-12 text-center">
+          <h1 className="mb-4 text-4xl font-heading font-bold">
+            Contactez-nous
+          </h1>
+          <p className="text-gray-600">
+            Décrivez votre situation, nous vous répondons sous 24h
+          </p>
+        </header>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -233,6 +235,6 @@ export default function ContactPage() {
           </form>
         </Form>
       </div>
-    </div>
+    </article>
   );
 }
