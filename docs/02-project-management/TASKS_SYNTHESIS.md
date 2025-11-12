@@ -16,7 +16,7 @@
 ```
 main (production)
   └── develop (intégration)
-       ├── feature/phase0-setup          (3 tasks, 13h)
+       ├── feature/phase0-setup          (4 tasks, 17h)
        ├── feature/phase1-landing        (8 tasks, 41h)
        ├── feature/phase2-auth           (3 tasks, 22h)
        ├── feature/phase2-dashboard      (7 tasks, 58h)
@@ -30,13 +30,19 @@ main (production)
 
 ### 2. Documentation complète des 30 tasks
 
-#### Phase 0: Setup (3 tasks, 13h)
+#### Phase 0: Setup (4 tasks, 17h)
 - ✅ **COMMON-01**: Project Setup (4h) - *déjà documenté*
 - ✅ **COMMON-02**: Design System (6h) - *déjà documenté*
 - ✅ **COMMON-03**: Supabase Config (3h) - **✨ NOUVEAU**
   - Schéma SQL complet (tables, RLS, indexes, functions)
   - Storage buckets configurés
   - Types TypeScript générés
+- ✅ **COMMON-04**: Error Handling System (4h) - **✨ NOUVEAU**
+  - Types d'erreurs custom et typés
+  - Error handler centralisé
+  - Integration Sentry pour monitoring
+  - Error boundaries Next.js
+  - Hook useSafeAction pour actions async
 
 #### Phase 1: Landing Page (8 tasks, 41h)
 - ✅ **P1-01**: Homepage Layout & Navigation (4h) - **✨ NOUVEAU**
@@ -77,29 +83,30 @@ main (production)
 
 | Métrique | Valeur |
 |----------|--------|
-| **Total tasks** | 30 |
-| **Tasks documentées avant** | 5 (17%) |
-| **Tasks nouvellement créées** | 25 (83%) |
-| **Effort total** | 200 heures |
+| **Total tasks** | 31 |
+| **Tasks documentées avant** | 5 (16%) |
+| **Tasks nouvellement créées** | 26 (84%) |
+| **Effort total** | 204 heures |
 | **Durée estimée** | 10-14 semaines |
 | **Branches features** | 7 |
-| **Fichiers créés** | 5 |
+| **Fichiers créés** | 6 |
 
 ---
 
-## 📁 Fichiers créés dans `/outputs/`
+## 📁 Fichiers créés dans `/docs/`
 
 ```
-outputs/
-├── GIT_STRATEGY.md                              # Stratégie Git complète
-├── tasks/
-│   ├── common/
-│   │   └── 03-supabase-config.md               # COMMON-03 détaillée
-│   ├── phase1-landing/
-│   │   ├── 01-homepage-layout.md               # P1-01 détaillée
-│   │   └── 03-08-remaining-tasks.md            # P1-03 à P1-08 condensées
-│   └── PHASE2_AND_PHASE3_TASKS.md              # Toutes les tasks P2 & P3
-└── TASKS_SYNTHESIS.md                          # Ce document
+docs/
+├── 02-project-management/
+│   ├── GIT_STRATEGY.md                          # Stratégie Git complète
+│   └── TASKS_SYNTHESIS.md                       # Ce document
+└── 03-development/
+    └── tasks/
+        ├── 01-homepage-layout.md                # P1-01 détaillée
+        ├── 03-supabase-config.md                # COMMON-03 détaillée
+        ├── 04-error-handling-system.md          # COMMON-04 détaillée
+        ├── 03-08-remaining-tasks.md             # P1-03 à P1-08 condensées
+        └── PHASE2_AND_PHASE3_TASKS.md           # Toutes les tasks P2 & P3
 ```
 
 ---
@@ -186,6 +193,7 @@ git checkout -b feature/phase0-setup
 - [ ] COMMON-01: Project Setup (Next.js + boilerplate)
 - [ ] COMMON-02: Design System (Shadcn UI)
 - [ ] COMMON-03: Supabase Config (DB + RLS)
+- [ ] COMMON-04: Error Handling System (Sentry + boundaries)
 - [ ] Merge vers `develop`
 
 ### Semaines 3-5: Phase 1 (Landing)
@@ -328,7 +336,7 @@ git push -u origin develop
 git checkout develop
 git checkout -b feature/phase0-setup
 
-# Suivre les tasks COMMON-01, 02, 03
+# Suivre les tasks COMMON-01, 02, 03, 04
 ```
 
 ---
@@ -371,7 +379,7 @@ git checkout -b feature/phase0-setup
 ## ✨ Conclusion
 
 Vous disposez maintenant de:
-- ✅ **30 tasks** documentées avec code
+- ✅ **31 tasks** documentées avec code
 - ✅ **Stratégie Git** claire (7 branches)
 - ✅ **Plan d'action** semaine par semaine
 - ✅ **Best practices** intégrées
