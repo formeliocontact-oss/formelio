@@ -19,9 +19,9 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html>
+    <html lang="fr">
       <body>
-        <div
+        <main
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -32,26 +32,33 @@ export default function GlobalError({
             fontFamily: 'system-ui, sans-serif',
           }}
         >
-          <h1 style={{ fontSize: '24px', marginBottom: '16px' }}>
-            Une erreur critique est survenue
-          </h1>
-          <p style={{ marginBottom: '24px', color: '#666' }}>
-            Nous sommes désolés pour ce désagrément.
-          </p>
-          <button
-            onClick={reset}
+          <article
             style={{
-              padding: '12px 24px',
-              background: '#000',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
+              textAlign: 'center',
+              maxWidth: '500px',
             }}
           >
-            Réessayer
-          </button>
-        </div>
+            <h1 style={{ fontSize: '24px', marginBottom: '16px' }}>
+              Une erreur critique est survenue
+            </h1>
+            <p style={{ marginBottom: '24px', color: '#666' }}>
+              Nous sommes désolés pour ce désagrément.
+            </p>
+            <button
+              onClick={reset}
+              style={{
+                padding: '12px 24px',
+                background: '#000',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+              }}
+            >
+              Réessayer
+            </button>
+          </article>
+        </main>
       </body>
     </html>
   );

@@ -3,7 +3,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,34 +17,32 @@ import {
 } from '@/components/ui/card';
 import { loginSchema, type LoginInput } from '@/lib/validations/auth';
 import { login } from '../actions';
+import { useSafeAction } from '@/hooks/use-safe-action';
 
 export default function LoginPage() {
-  const [serverError, setServerError] = useState<string>('');
+  const { execute, loading } = useSafeAction({
+    showToast: true, // Affiche automatiquement les erreurs avec toast
+  });
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
   });
 
   const onSubmit = async (data: LoginInput) => {
-    setServerError('');
-
     const formData = new FormData();
     formData.append('email', data.email);
     formData.append('password', data.password);
 
-    const result = await login(formData);
-
-    if (result?.error) {
-      setServerError(result.error);
-    }
+    // useSafeAction gère automatiquement les erreurs et la redirection
+    await execute(login, formData);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted px-4">
+    <main className="flex min-h-screen items-center justify-center bg-muted px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Connexion</CardTitle>
@@ -55,12 +52,6 @@ export default function LoginPage() {
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
-            {serverError && (
-              <div className="rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive">
-                {serverError}
-              </div>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -95,8 +86,8 @@ export default function LoginPage() {
           </CardContent>
 
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? 'Connexion...' : 'Se connecter'}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Connexion...' : 'Se connecter'}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
@@ -111,6 +102,6 @@ export default function LoginPage() {
           </CardFooter>
         </form>
       </Card>
-    </div>
+    </main>
   );
 }

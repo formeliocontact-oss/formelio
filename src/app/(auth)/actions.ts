@@ -5,6 +5,11 @@ import { redirect } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/server';
 import { loginSchema } from '@/lib/validations/auth';
+import {
+  AuthenticationError,
+  ValidationError,
+  SupabaseError,
+} from '@/lib/errors/error-types';
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
@@ -16,10 +21,14 @@ export async function login(formData: FormData) {
   });
 
   if (!validatedFields.success) {
-    return {
-      error: 'Données invalides',
-      fields: validatedFields.error.flatten().fieldErrors,
-    };
+    const fields: Record<string, string[]> = {};
+    Object.entries(validatedFields.error.flatten().fieldErrors).forEach(
+      ([key, value]) => {
+        fields[key] = value || [];
+      }
+    );
+
+    throw new ValidationError('Données invalides', fields);
   }
 
   const { email, password } = validatedFields.data;
@@ -31,9 +40,25 @@ export async function login(formData: FormData) {
   });
 
   if (error) {
-    return {
-      error: 'Email ou mot de passe invalide',
-    };
+    // Map Supabase auth errors to meaningful messages
+    if (error.message.includes('Invalid login credentials')) {
+      throw new AuthenticationError('Email ou mot de passe incorrect');
+    }
+
+    if (error.message.includes('Email not confirmed')) {
+      throw new AuthenticationError(
+        'Veuillez confirmer votre email avant de vous connecter'
+      );
+    }
+
+    if (error.message.includes('rate limit')) {
+      throw new AuthenticationError(
+        'Trop de tentatives. Veuillez réessayer dans quelques minutes.'
+      );
+    }
+
+    // Generic Supabase error
+    throw new SupabaseError(error.message);
   }
 
   revalidatePath('/', 'layout');
@@ -48,9 +73,7 @@ export async function signup(formData: FormData) {
 
   // Basic validation
   if (!email || !password) {
-    return {
-      error: 'Email et mot de passe requis',
-    };
+    throw new ValidationError('Email et mot de passe requis');
   }
 
   const { error } = await supabase.auth.signUp({
@@ -62,9 +85,22 @@ export async function signup(formData: FormData) {
   });
 
   if (error) {
-    return {
-      error: error.message,
-    };
+    // Map Supabase signup errors
+    if (error.message.includes('already registered')) {
+      throw new AuthenticationError('Cet email est déjà utilisé');
+    }
+
+    if (error.message.includes('Password should be')) {
+      throw new ValidationError(
+        'Le mot de passe doit contenir au moins 6 caractères'
+      );
+    }
+
+    if (error.message.includes('invalid email')) {
+      throw new ValidationError("Format d'email invalide");
+    }
+
+    throw new SupabaseError(error.message);
   }
 
   return {
@@ -76,7 +112,11 @@ export async function signup(formData: FormData) {
 export async function signout() {
   const supabase = await createClient();
 
-  await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    throw new SupabaseError('Erreur lors de la déconnexion');
+  }
 
   revalidatePath('/', 'layout');
   redirect('/login');
