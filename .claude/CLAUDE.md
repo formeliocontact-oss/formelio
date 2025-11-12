@@ -95,17 +95,13 @@ rg "Schema.*z\.object" lib/validations/    # Validations
 **Error Handling**:
 - [ERROR_HANDLING_GUIDE.md](../docs/03-development/ERROR_HANDLING_GUIDE.md) - Error types, patterns, useSafeAction
 
-**Archived**:
+**Rules**:
 - [archive/PATTERNS.md](archive/PATTERNS.md) - Full pattern templates
 - [archive/DECISIONS.md](archive/DECISIONS.md) - Architecture decisions
-- [archive/rules/ARCHITECTURE_RULES.md](archive/rules/ARCHITECTURE_RULES.md) - Anti-duplication, canonical locations
-- [archive/rules/TYPESCRIPT_RULES.md](archive/rules/TYPESCRIPT_RULES.md) - Strict typing, NO any
-- [archive/rules/HTML_SEMANTIC_RULES.md](archive/rules/HTML_SEMANTIC_RULES.md) - Semantic HTML, accessibility
 - [archive/rules/SUPABASE_RULES.md](archive/rules/SUPABASE_RULES.md) - Supabase details
 - [archive/rules/NEXTJS_RULES.md](archive/rules/NEXTJS_RULES.md) - Server/Client deep-dive
 - [archive/TAILWIND_V4_COMPATIBILITY.md](archive/TAILWIND_V4_COMPATIBILITY.md) - Tailwind v4 tech doc
 
----
 
 **Philosophy**: Pragmatic over perfect. Ship fast, iterate.
 

@@ -1,20 +1,529 @@
-# Phase 1 - Tasks complÃ¨tes (P1-03 Ã  P1-08)
+# Phase 1 - Landing Page (P1-01 à P1-08)
 
-Voici les 6 tasks restantes de Phase 1 en format condensÃ© mais avec toutes les informations nÃ©cessaires.
+Voici les 8 tasks de Phase 1 en format condensé mais avec toutes les informations nécessaires.
+
+---
+
+## P1-01 - Layout & Navigation (Header + Footer)
+
+**ID**: P1-01 | **Phase**: 1 | **Priority**: P0 | **Effort**: 6h | **Status**: 🔴 TODO
+**Branch**: `feature/phase1-landing`
+
+### Description
+Créer la structure de layout marketing avec header (navigation + logo) et footer (liens + contact + copyright).
+
+### Acceptance Criteria
+- [ ] Header avec logo Formelio (SVG)
+- [ ] Navigation: Accueil, À propos, Services, Contact
+- [ ] Boutons: Inscription, Connexion (liens vers auth)
+- [ ] Responsive: menu burger mobile
+- [ ] Footer avec 3 colonnes: Liens rapides, Contact, Copyright
+- [ ] Sticky header au scroll (optionnel)
+- [ ] Accessible (ARIA labels)
+
+### Implementation
+```typescript
+// components/layout/marketing-header.tsx
+'use client'
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { Menu, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+export function MarketingHeader() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navigation = [
+    { name: 'Accueil', href: '/' },
+    { name: 'À propos', href: '/a-propos' },
+    { name: 'Services', href: '/#services' },
+    { name: 'Contact', href: '/contact' },
+  ];
+
+  return (
+    <header className="sticky top-0 z-50 border-b bg-white">
+      <nav className="container mx-auto flex items-center justify-between px-4 py-4">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <svg
+            className="h-8 w-8"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {/* Icône chevrons >> style Formelio */}
+            <path
+              d="M5 12L10 7L11.5 8.5L8 12L11.5 15.5L10 17L5 12Z"
+              fill="currentColor"
+            />
+            <path
+              d="M13 12L18 7L19.5 8.5L16 12L19.5 15.5L18 17L13 12Z"
+              fill="currentColor"
+            />
+          </svg>
+          <span className="text-xl font-heading font-bold">FORMELIO</span>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <div className="hidden items-center gap-6 md:flex">
+          {navigation.map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className="text-sm font-medium text-gray-600 hover:text-primary transition-colors"
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
+
+        {/* CTA Buttons */}
+        <div className="hidden items-center gap-3 md:flex">
+          <Button variant="ghost" asChild>
+            <Link href="/signup">Inscription</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/login">Connexion</Link>
+          </Button>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
+      </nav>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="border-t bg-white md:hidden">
+          <div className="container mx-auto space-y-1 px-4 py-4">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="block rounded-md px-3 py-2 text-base font-medium hover:bg-gray-100"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.name}
+              </Link>
+            ))}
+            <div className="flex flex-col gap-2 pt-4">
+              <Button variant="outline" asChild className="w-full">
+                <Link href="/signup">Inscription</Link>
+              </Button>
+              <Button asChild className="w-full">
+                <Link href="/login">Connexion</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}
+
+// components/layout/marketing-footer.tsx
+import Link from 'next/link';
+
+export function MarketingFooter() {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <footer className="border-t bg-gray-900 text-gray-300">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          {/* Colonne 1: Liens rapides */}
+          <div>
+            <h3 className="mb-4 text-lg font-semibold text-white">Liens rapides</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/a-propos" className="hover:text-white transition-colors">
+                  À propos
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/mentions-legales" className="hover:text-white transition-colors">
+                  Mentions légales
+                </Link>
+              </li>
+              <li>
+                <Link href="/confidentialite" className="hover:text-white transition-colors">
+                  Politique de confidentialité
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Colonne 2: Contact */}
+          <div>
+            <h3 className="mb-4 text-lg font-semibold text-white">Contact</h3>
+            <ul className="space-y-2">
+              <li>
+                <a
+                  href="mailto:contact@formelio.fr"
+                  className="hover:text-white transition-colors"
+                >
+                  Email: contact@formelio.fr
+                </a>
+              </li>
+              <li className="text-gray-500">Phone: to be added</li>
+              <li className="text-gray-500">Address: to be added</li>
+            </ul>
+          </div>
+
+          {/* Colonne 3: Logo + Tagline */}
+          <div>
+            <div className="mb-4 flex items-center gap-2">
+              <svg
+                className="h-8 w-8 text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 12L10 7L11.5 8.5L8 12L11.5 15.5L10 17L5 12Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M13 12L18 7L19.5 8.5L16 12L19.5 15.5L18 17L13 12Z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span className="text-xl font-heading font-bold text-white">FORMELIO</span>
+            </div>
+            <p className="text-sm italic">Votre temps, notre priorité</p>
+          </div>
+        </div>
+
+        {/* Copyright */}
+        <div className="mt-8 border-t border-gray-800 pt-8 text-center text-sm">
+          <p>© {currentYear} Formelio. Tous droits réservés.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// app/(marketing)/layout.tsx
+import { MarketingHeader } from '@/components/layout/marketing-header';
+import { MarketingFooter } from '@/components/layout/marketing-footer';
+
+export default function MarketingLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <MarketingHeader />
+      <main>{children}</main>
+      <MarketingFooter />
+    </>
+  );
+}
+```
+
+### Dependencies
+- ✅ COMMON-02: Design System (Button, colors)
+- ✅ Lucide React (Menu, X icons)
+
+---
+
+## P1-02 - Homepage Hero & Why Section
+
+**ID**: P1-02 | **Phase**: 1 | **Priority**: P0 | **Effort**: 8h | **Status**: 🔴 TODO
+**Branch**: `feature/phase1-landing`
+
+### Description
+Créer la page d'accueil avec hero, section "Pourquoi Formelio réussit", témoignages clients et badges stats.
+
+### Acceptance Criteria
+- [ ] Hero section: titre H1 + sous-titre + CTA primaire
+- [ ] Background gradient ou image (optionnel)
+- [ ] Section "Pourquoi Formelio" avec 4 cards (Formation, Expérience, Connaissance, Relations)
+- [ ] Témoignages: 3 cards avec nom, profession, étoiles
+- [ ] Stats badges: 3 badges (100%, 24h, Anciens greffe)
+- [ ] Responsive et animations
+- [ ] Structured data pour SEO
+
+### Implementation
+```typescript
+// components/landing/hero-section.tsx
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+
+export function HeroSection() {
+  return (
+    <section className="relative bg-gradient-to-br from-blue-50 via-white to-blue-50 py-20 md:py-32">
+      <div className="container mx-auto px-4">
+        <div className="mx-auto max-w-4xl text-center">
+          {/* Logo chevrons décoratif (optionnel) */}
+          <div className="mb-6 flex justify-center">
+            <svg
+              className="h-16 w-16 text-primary"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12L10 7L11.5 8.5L8 12L11.5 15.5L10 17L5 12Z"
+                fill="currentColor"
+              />
+              <path
+                d="M13 12L18 7L19.5 8.5L16 12L19.5 15.5L18 17L13 12Z"
+                fill="currentColor"
+              />
+            </svg>
+          </div>
+
+          <h1 className="mb-6 text-4xl font-heading font-bold leading-tight text-gray-900 md:text-5xl lg:text-6xl">
+            Votre dossier est bloqué ?<br />
+            <span className="text-primary">Nous le débloquerons.</span>
+          </h1>
+
+          <p className="mb-8 text-lg text-gray-600 md:text-xl">
+            Service spécialisé dans les formalités juridiques complexes et les dossiers rejetés.
+            <br />
+            Expertise insider des greffes français.
+          </p>
+
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Button size="lg" asChild className="min-w-[200px]">
+              <Link href="/contact">Débloquer mon dossier</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild className="min-w-[200px]">
+              <Link href="/a-propos">En savoir plus</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// components/landing/why-formelio-section.tsx
+import { GraduationCap, Building2, Search, Handshake } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+
+const reasons = [
+  {
+    icon: GraduationCap,
+    title: 'Formation juridique spécialisée',
+    description: 'Diplôme en droit de l\'Université de Montpellier',
+  },
+  {
+    icon: Building2,
+    title: 'Expérience au greffe RCS',
+    description: 'Anciens du service RCS du tribunal de commerce',
+  },
+  {
+    icon: Search,
+    title: 'Connaissance des causes de rejet',
+    description: 'Expertise approfondie des divergences RNE/RCS/INSEE',
+  },
+  {
+    icon: Handshake,
+    title: 'Relations directes avec les registres',
+    description: 'Communication privilégiée pour débloquer les situations',
+  },
+];
+
+export function WhyFormelioSection() {
+  return (
+    <section className="py-20 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="mb-12 text-center">
+          <h2 className="text-3xl font-heading font-bold mb-4">
+            Pourquoi Formelio réussit là où d'autres échouent
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {reasons.map((reason) => (
+            <Card key={reason.title} className="text-center hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                  <reason.icon className="h-8 w-8 text-primary" />
+                </div>
+                <CardTitle className="text-lg">{reason.title}</CardTitle>
+                <CardDescription>{reason.description}</CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// components/landing/testimonials-section.tsx
+import { Star } from 'lucide-react';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+
+const testimonials = [
+  {
+    name: 'Marie D.',
+    role: 'Expert-comptable',
+    content: 'Formelio a débloqué notre dossier en 48h après 3 mois d\'attente.',
+    rating: 5,
+  },
+  {
+    name: 'Jean-Pierre L.',
+    role: 'Avocat',
+    content: 'Leur connaissance du greffe fait toute la différence',
+    rating: 5,
+  },
+  {
+    name: 'Sophie M.',
+    role: 'Notaire',
+    content: 'Service professionnel et réactif, vraiment experts dans leur domaine',
+    rating: 5,
+  },
+];
+
+export function TestimonialsSection() {
+  return (
+    <section className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <h2 className="mb-12 text-center text-3xl font-heading font-bold">
+          Ils nous font confiance
+        </h2>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {testimonials.map((testimonial) => (
+            <Card key={testimonial.name} className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="mb-2 flex gap-1">
+                  {Array.from({ length: testimonial.rating }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4 italic text-gray-600">"{testimonial.content}"</p>
+                <div className="border-t pt-4">
+                  <p className="font-semibold">{testimonial.name}</p>
+                  <p className="text-sm text-gray-500">{testimonial.role}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// components/landing/stats-badges.tsx
+import { CheckCircle2, Clock, Shield } from 'lucide-react';
+
+const stats = [
+  {
+    icon: CheckCircle2,
+    label: '100% de dossiers débloqués',
+    color: 'text-green-600',
+  },
+  {
+    icon: Clock,
+    label: 'Réponse sous 24h',
+    color: 'text-blue-600',
+  },
+  {
+    icon: Shield,
+    label: 'Anciens du greffe RCS',
+    color: 'text-primary',
+  },
+];
+
+export function StatsBadges() {
+  return (
+    <section className="border-y bg-white py-12">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col items-center justify-center gap-8 md:flex-row md:gap-12">
+          {stats.map((stat) => (
+            <div key={stat.label} className="flex items-center gap-3">
+              <stat.icon className={`h-8 w-8 ${stat.color}`} />
+              <span className="font-semibold text-gray-900">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// app/(marketing)/page.tsx
+import { HeroSection } from '@/components/landing/hero-section';
+import { WhyFormelioSection } from '@/components/landing/why-formelio-section';
+import { StatsBadges } from '@/components/landing/stats-badges';
+import { TestimonialsSection } from '@/components/landing/testimonials-section';
+import { ServicesSection } from '@/components/landing/services-section';
+import { ProcessSection } from '@/components/landing/process-section';
+import { CTASection } from '@/components/landing/cta-section';
+
+export default function HomePage() {
+  // Structured data pour SEO
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Formelio',
+    url: 'https://formelio.fr',
+    logo: 'https://formelio.fr/formelio_logo.png',
+    description: 'Service spécialisé dans les formalités juridiques complexes',
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'FR',
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      email: 'contact@formelio.fr',
+      contactType: 'Customer Service',
+      areaServed: 'FR',
+      availableLanguage: 'French',
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <HeroSection />
+      <WhyFormelioSection />
+      <StatsBadges />
+      <ServicesSection />
+      <TestimonialsSection />
+      <ProcessSection />
+      <CTASection />
+    </>
+  );
+}
+```
+
+### Dependencies
+- ✅ P1-01: Layout (Header + Footer structure)
+- ✅ COMMON-02: Design System
 
 ---
 
 ## P1-03 - Homepage Services Section
 
-**ID**: P1-03 | **Phase**: 1 | **Priority**: P0 | **Effort**: 5h | **Status**: ðŸ”´ TODO  
+**ID**: P1-03 | **Phase**: 1 | **Priority**: P0 | **Effort**: 5h | **Status**: 🔴 TODO
 **Branch**: `feature/phase1-landing`
 
 ### Description
-Section prÃ©sentant les 3-4 services principaux de Formelio avec icÃ´nes, titres et descriptions.
+Section présentant les 3-4 services principaux de Formelio avec icônes, titres et descriptions.
 
 ### Acceptance Criteria
 - [ ] 4 cards de services responsives
-- [ ] IcÃ´nes pertinentes (Lucide React)
+- [ ] Icônes pertinentes (Lucide React)
 - [ ] Hover effects sur les cards
 - [ ] Grid layout responsive (1/2/4 colonnes)
 - [ ] Animations smooth au scroll
@@ -30,23 +539,23 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/ca
 const services = [
   {
     icon: FileSearch,
-    title: 'DÃ©blocage de dossiers rejetÃ©s',
-    description: 'Expertise unique pour rÃ©soudre les rejets administratifs complexes',
+    title: 'Déblocage de dossiers rejetés',
+    description: 'Expertise unique pour résoudre les rejets administratifs complexes',
   },
   {
     icon: Shield,
-    title: 'FormalitÃ©s complexes',
-    description: 'Restructurations, cas atypiques, situations administratives bloquÃ©es',
+    title: 'Formalités complexes',
+    description: 'Restructurations, cas atypiques, situations administratives bloquées',
   },
   {
     icon: CheckCircle2,
-    title: 'Audit prÃ©ventif',
-    description: 'RÃ©solution des problÃ¨mes AVANT soumission aux greffes',
+    title: 'Audit préventif',
+    description: 'Résolution des problèmes AVANT soumission aux greffes',
   },
   {
     icon: MessageSquare,
     title: 'Communication directe',
-    description: 'Relations privilÃ©giÃ©es avec les registres (RNE, RCS, INSEE)',
+    description: 'Relations privilégiées avec les registres (RNE, RCS, INSEE)',
   },
 ];
 
@@ -56,13 +565,13 @@ export function ServicesSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-heading font-bold mb-4">
-            Les situations que nous rÃ©solvons
+            Les situations que nous résolvons
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Service spÃ©cialisÃ© dans les formalitÃ©s juridiques que les autres services ne peuvent pas traiter
+            Service spécialisé dans les formalités juridiques que les autres services ne peuvent pas traiter
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service) => (
             <Card key={service.title} className="hover:shadow-lg transition-shadow">
@@ -81,24 +590,24 @@ export function ServicesSection() {
 ```
 
 ### Dependencies
-- âœ… P1-01: Layout (structure)
-- âœ… COMMON-02: Design System
+- ✅ P1-01: Layout (structure)
+- ✅ COMMON-02: Design System
 
 ---
 
 ## P1-04 - Homepage Process & CTA
 
-**ID**: P1-04 | **Phase**: 1 | **Priority**: P0 | **Effort**: 4h | **Status**: ðŸ”´ TODO  
+**ID**: P1-04 | **Phase**: 1 | **Priority**: P0 | **Effort**: 4h | **Status**: 🔴 TODO
 **Branch**: `feature/phase1-landing`
 
 ### Description
-Section expliquant le processus en 4 Ã©tapes + CTA final pour convertir les visiteurs.
+Section expliquant le processus en 4 étapes + CTA final pour convertir les visiteurs.
 
 ### Acceptance Criteria
-- [ ] Timeline visuelle en 4 Ã©tapes
-- [ ] NumÃ©rotation claire (1, 2, 3, 4)
+- [ ] Timeline visuelle en 4 étapes
+- [ ] Numérotation claire (1, 2, 3, 4)
 - [ ] Responsive (vertical mobile, horizontal desktop)
-- [ ] CTA section avec 2 boutons (Contact + Ã€ propos)
+- [ ] CTA section avec 2 boutons (Contact + À propos)
 - [ ] Animations au scroll
 
 ### Implementation
@@ -108,7 +617,7 @@ const steps = [
   {
     number: 1,
     title: 'Analyse du dossier',
-    description: 'Nous Ã©tudions votre situation et identifions les blocages',
+    description: 'Nous étudions votre situation et identifions les blocages',
   },
   {
     number: 2,
@@ -117,13 +626,13 @@ const steps = [
   },
   {
     number: 3,
-    title: 'RÃ©solution et soumission',
-    description: 'Correction des problÃ¨mes et communication directe avec les registres',
+    title: 'Résolution et soumission',
+    description: 'Correction des problèmes et communication directe avec les registres',
   },
   {
     number: 4,
-    title: 'Suivi jusqu\'Ã  validation',
-    description: 'Accompagnement complet jusqu\'Ã  la validation finale',
+    title: 'Suivi jusqu\'à validation',
+    description: 'Accompagnement complet jusqu\'à la validation finale',
   },
 ];
 
@@ -134,11 +643,11 @@ export function ProcessSection() {
         <h2 className="text-3xl font-heading font-bold text-center mb-12">
           Notre processus
         </h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
           {/* Connecting line (desktop only) */}
           <div className="hidden md:block absolute top-8 left-0 right-0 h-0.5 bg-primary/20" />
-          
+
           {steps.map((step) => (
             <div key={step.number} className="relative">
               <div className="flex flex-col items-center text-center">
@@ -162,14 +671,14 @@ export function CTASection() {
     <section className="py-20 bg-primary text-white">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-heading font-bold mb-4">
-          Votre dossier est bloquÃ© ?
+          Votre dossier est bloqué ?
         </h2>
         <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-          Ne perdez plus de temps. Notre expertise unique dÃ©bloque les situations les plus complexes.
+          Ne perdez plus de temps. Notre expertise unique débloque les situations les plus complexes.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button size="lg" variant="secondary" asChild>
-            <Link href="/contact">DÃ©bloquer mon dossier</Link>
+            <Link href="/contact">Débloquer mon dossier</Link>
           </Button>
           <Button size="lg" variant="outline" asChild className="text-white border-white hover:bg-white/10">
             <Link href="/a-propos">En savoir plus</Link>
@@ -185,15 +694,15 @@ export function CTASection() {
 
 ## P1-05 - About Page
 
-**ID**: P1-05 | **Phase**: 1 | **Priority**: P1 | **Effort**: 3h | **Status**: ðŸ”´ TODO  
+**ID**: P1-05 | **Phase**: 1 | **Priority**: P1 | **Effort**: 3h | **Status**: 🔴 TODO
 **Branch**: `feature/phase1-landing`
 
 ### Description
-Page "Ã€ propos" prÃ©sentant le fondateur, son expertise, et la mission de Formelio.
+Page "À propos" présentant le fondateur, son expertise, et la mission de Formelio.
 
 ### Acceptance Criteria
 - [ ] Section hero avec titre et intro
-- [ ] Section parcours (diplÃ´me, expÃ©rience greffe)
+- [ ] Section parcours (diplôme, expérience greffe)
 - [ ] Section expertise (insider knowledge)
 - [ ] Section mission et valeurs
 - [ ] Timeline professionnelle
@@ -212,7 +721,7 @@ export default function AboutPage() {
             Une expertise unique au service des professionnels
           </h1>
           <p className="text-xl text-gray-600">
-            Ancien du greffe du tribunal de commerce, diplÃ´mÃ© en droit de l'UniversitÃ© de Montpellier
+            Ancien du greffe du tribunal de commerce, diplômé en droit de l'Université de Montpellier
           </p>
         </div>
 
@@ -222,17 +731,17 @@ export default function AboutPage() {
           <div className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>ðŸŽ“ Formation juridique</CardTitle>
+                <CardTitle>🎓 Formation juridique</CardTitle>
                 <CardDescription>
-                  DiplÃ´me en droit de l'UniversitÃ© de Montpellier, spÃ©cialisation en droit des sociÃ©tÃ©s
+                  Diplôme en droit de l'Université de Montpellier, spécialisation en droit des sociétés
                 </CardDescription>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>ðŸ›ï¸ ExpÃ©rience au greffe RCS</CardTitle>
+                <CardTitle>🏛️ Expérience au greffe RCS</CardTitle>
                 <CardDescription>
-                  Plusieurs annÃ©es au service du Registre du Commerce et des SociÃ©tÃ©s, connaissance approfondie des processus internes
+                  Plusieurs années au service du Registre du Commerce et des Sociétés, connaissance approfondie des processus internes
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -241,18 +750,18 @@ export default function AboutPage() {
 
         {/* Expertise */}
         <section className="mb-16 bg-gray-50 p-8 rounded-lg">
-          <h2 className="text-2xl font-semibold mb-6">Pourquoi Formelio rÃ©ussit lÃ  oÃ¹ d'autres Ã©chouent</h2>
+          <h2 className="text-2xl font-semibold mb-6">Pourquoi Formelio réussit là où d'autres échouent</h2>
           <ul className="space-y-4">
             <li className="flex items-start">
               <CheckCircle2 className="h-6 w-6 text-primary mr-3 flex-shrink-0 mt-0.5" />
               <div>
-                <strong>Connaissance insider :</strong> ComprÃ©hension profonde des rouages administratifs du greffe
+                <strong>Connaissance insider :</strong> Compréhension profonde des rouages administratifs du greffe
               </div>
             </li>
             <li className="flex items-start">
               <CheckCircle2 className="h-6 w-6 text-primary mr-3 flex-shrink-0 mt-0.5" />
               <div>
-                <strong>Divergences bases de donnÃ©es :</strong> MaÃ®trise des incohÃ©rences entre RNE, RCS et INSEE
+                <strong>Divergences bases de données :</strong> Maîtrise des incohérences entre RNE, RCS et INSEE
               </div>
             </li>
             <li className="flex items-start">
@@ -280,18 +789,18 @@ export default function AboutPage() {
 
 ## P1-06 - Contact Page & Form
 
-**ID**: P1-06 | **Phase**: 1 | **Priority**: P0 | **Effort**: 6h | **Status**: ðŸ”´ TODO  
+**ID**: P1-06 | **Phase**: 1 | **Priority**: P0 | **Effort**: 6h | **Status**: 🔴 TODO
 **Branch**: `feature/phase1-landing`
 
 ### Description
-Page contact avec formulaire structurÃ©, validation Zod, et option d'upload de document.
+Page contact avec formulaire structuré, validation Zod, et option d'upload de document.
 
 ### Acceptance Criteria
-- [ ] Formulaire avec 8 champs (nom, email, tÃ©l, profession, type problÃ¨me, message, fichier optionnel)
-- [ ] Validation Zod cÃ´tÃ© client
+- [ ] Formulaire avec 8 champs (nom, email, tél, profession, type problème, message, fichier optionnel)
+- [ ] Validation Zod côté client
 - [ ] Upload PDF optionnel (max 10MB)
-- [ ] Messages de succÃ¨s/erreur
-- [ ] Email transactionnel envoyÃ© (Resend ou similaire)
+- [ ] Messages de succès/erreur
+- [ ] Email transactionnel envoyé (Resend ou similaire)
 - [ ] Responsive et accessible
 
 ### Implementation
@@ -300,13 +809,13 @@ Page contact avec formulaire structurÃ©, validation Zod, et option d'upload de
 import { z } from 'zod';
 
 export const contactFormSchema = z.object({
-  firstName: z.string().min(2, 'PrÃ©nom requis'),
+  firstName: z.string().min(2, 'Prénom requis'),
   lastName: z.string().min(2, 'Nom requis'),
   email: z.string().email('Email invalide'),
-  phone: z.string().regex(/^0[1-9][0-9]{8}$/, 'TÃ©lÃ©phone invalide'),
+  phone: z.string().regex(/^0[1-9][0-9]{8}$/, 'Téléphone invalide'),
   profession: z.enum(['expert-comptable', 'avocat', 'notaire', 'autre']),
   problemType: z.enum(['rejected', 'complex', 'question', 'other']),
-  message: z.string().min(20, 'Message trop court (min 20 caractÃ¨res)'),
+  message: z.string().min(20, 'Message trop court (min 20 caractères)'),
   file: z.instanceof(File).optional(),
 });
 
@@ -344,10 +853,10 @@ export default function ContactPage() {
 
       if (!response.ok) throw new Error('Erreur lors de l\'envoi');
 
-      toast.success('Message envoyÃ© ! Nous vous rÃ©pondrons sous 24h.');
+      toast.success('Message envoyé ! Nous vous répondrons sous 24h.');
       form.reset();
     } catch (error) {
-      toast.error('Erreur lors de l\'envoi. Veuillez rÃ©essayer.');
+      toast.error('Erreur lors de l\'envoi. Veuillez réessayer.');
     }
   }
 
@@ -358,7 +867,7 @@ export default function ContactPage() {
           Contactez-nous
         </h1>
         <p className="text-center text-gray-600 mb-12">
-          DÃ©crivez votre situation, nous vous rÃ©pondons sous 24h
+          Décrivez votre situation, nous vous répondons sous 24h
         </p>
 
         <Form {...form}>
@@ -369,7 +878,7 @@ export default function ContactPage() {
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>PrÃ©nom</FormLabel>
+                    <FormLabel>Prénom</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -393,7 +902,7 @@ export default function ContactPage() {
             </div>
 
             {/* Email, Phone, Profession, ProblemType fields... */}
-            
+
             <FormField
               control={form.control}
               name="message"
@@ -440,18 +949,18 @@ export default function ContactPage() {
 // app/api/contact/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { contactFormSchema } from '@/lib/validations/contact';
-// TODO: IntÃ©grer Resend pour email transactionnel
+// TODO: Intégrer Resend pour email transactionnel
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
-    
+
     const validated = contactFormSchema.parse(data);
-    
+
     // TODO: Save to database
     // TODO: Send email notification
-    
+
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
@@ -463,19 +972,19 @@ export async function POST(request: NextRequest) {
 
 ## P1-07 - Legal Pages
 
-**ID**: P1-07 | **Phase**: 1 | **Priority**: P1 | **Effort**: 4h | **Status**: ðŸ”´ TODO  
+**ID**: P1-07 | **Phase**: 1 | **Priority**: P1 | **Effort**: 4h | **Status**: 🔴 TODO
 **Branch**: `feature/phase1-landing`
 
 ### Description
-CrÃ©er les 3 pages lÃ©gales obligatoires : Mentions lÃ©gales, CGU, Politique de confidentialitÃ© (RGPD).
+Créer les 3 pages légales obligatoires : Mentions légales, CGU, Politique de confidentialité (RGPD).
 
 ### Acceptance Criteria
-- [ ] Page Mentions lÃ©gales (Ã©diteur, hÃ©bergeur, SIRET)
+- [ ] Page Mentions légales (éditeur, hébergeur, SIRET)
 - [ ] Page CGU (conditions d'utilisation)
-- [ ] Page ConfidentialitÃ© (RGPD conforme)
+- [ ] Page Confidentialité (RGPD conforme)
 - [ ] Structure markdown lisible
 - [ ] Liens depuis le footer
-- [ ] SEO optimisÃ©
+- [ ] SEO optimisé
 
 ### Implementation
 ```typescript
@@ -484,28 +993,28 @@ export default function LegalNoticePage() {
   return (
     <div className="py-20">
       <div className="container mx-auto px-4 max-w-4xl prose prose-gray">
-        <h1>Mentions lÃ©gales</h1>
-        
-        <h2>Ã‰diteur du site</h2>
+        <h1>Mentions légales</h1>
+
+        <h2>Éditeur du site</h2>
         <p>
           <strong>Raison sociale :</strong> Formelio<br />
-          <strong>SIRET :</strong> [Ã€ COMPLÃ‰TER]<br />
-          <strong>Adresse :</strong> [Ã€ COMPLÃ‰TER]<br />
+          <strong>SIRET :</strong> [À COMPLÉTER]<br />
+          <strong>Adresse :</strong> [À COMPLÉTER]<br />
           <strong>Email :</strong> contact@formelio.fr<br />
         </p>
 
         <h2>Directeur de la publication</h2>
         <p>[Nom du fondateur]</p>
 
-        <h2>HÃ©bergement</h2>
+        <h2>Hébergement</h2>
         <p>
-          <strong>HÃ©bergeur :</strong> Vercel Inc.<br />
+          <strong>Hébergeur :</strong> Vercel Inc.<br />
           <strong>Adresse :</strong> 340 S Lemon Ave #4133, Walnut, CA 91789, USA<br />
         </p>
 
-        <h2>PropriÃ©tÃ© intellectuelle</h2>
+        <h2>Propriété intellectuelle</h2>
         <p>
-          L'ensemble du contenu de ce site (textes, images, logos) est la propriÃ©tÃ© exclusive de Formelio...
+          L'ensemble du contenu de ce site (textes, images, logos) est la propriété exclusive de Formelio...
         </p>
       </div>
     </div>
@@ -517,24 +1026,24 @@ export default function TosPage() {
   return (
     <div className="py-20">
       <div className="container mx-auto px-4 max-w-4xl prose prose-gray">
-        <h1>Conditions GÃ©nÃ©rales d'Utilisation (CGU)</h1>
-        
+        <h1>Conditions Générales d'Utilisation (CGU)</h1>
+
         <h2>1. Objet</h2>
         <p>
-          Les prÃ©sentes conditions gÃ©nÃ©rales d'utilisation (CGU) ont pour objet de dÃ©finir...
+          Les présentes conditions générales d'utilisation (CGU) ont pour objet de définir...
         </p>
 
-        <h2>2. AccÃ¨s au site</h2>
+        <h2>2. Accès au site</h2>
         <p>
           Le site formelio.fr est accessible gratuitement...
         </p>
 
-        <h2>3. Services proposÃ©s</h2>
+        <h2>3. Services proposés</h2>
         <p>
-          Formelio propose des services de formalitÃ©s juridiques...
+          Formelio propose des services de formalités juridiques...
         </p>
 
-        <h2>4. ResponsabilitÃ©s</h2>
+        <h2>4. Responsabilités</h2>
         {/* ... */}
       </div>
     </div>
@@ -546,35 +1055,35 @@ export default function PrivacyPage() {
   return (
     <div className="py-20">
       <div className="container mx-auto px-4 max-w-4xl prose prose-gray">
-        <h1>Politique de ConfidentialitÃ©</h1>
-        
+        <h1>Politique de Confidentialité</h1>
+
         <p className="lead">
-          ConformÃ©ment au RÃ¨glement GÃ©nÃ©ral sur la Protection des DonnÃ©es (RGPD)...
+          Conformément au Règlement Général sur la Protection des Données (RGPD)...
         </p>
 
-        <h2>1. DonnÃ©es collectÃ©es</h2>
-        <p>Nous collectons les donnÃ©es suivantes :</p>
+        <h2>1. Données collectées</h2>
+        <p>Nous collectons les données suivantes :</p>
         <ul>
-          <li>DonnÃ©es d'identification (nom, prÃ©nom, email)</li>
-          <li>DonnÃ©es professionnelles (profession, entreprise)</li>
+          <li>Données d'identification (nom, prénom, email)</li>
+          <li>Données professionnelles (profession, entreprise)</li>
           <li>Documents fournis volontairement</li>
         </ul>
 
-        <h2>2. FinalitÃ© du traitement</h2>
-        <p>Les donnÃ©es sont utilisÃ©es pour :</p>
+        <h2>2. Finalité du traitement</h2>
+        <p>Les données sont utilisées pour :</p>
         <ul>
-          <li>Traiter vos demandes de formalitÃ©s</li>
-          <li>GÃ©rer votre compte client</li>
+          <li>Traiter vos demandes de formalités</li>
+          <li>Gérer votre compte client</li>
           <li>Vous informer de l'avancement de vos dossiers</li>
         </ul>
 
         <h2>3. Vos droits (RGPD)</h2>
         <p>Vous disposez des droits suivants :</p>
         <ul>
-          <li>Droit d'accÃ¨s Ã  vos donnÃ©es</li>
+          <li>Droit d'accès à vos données</li>
           <li>Droit de rectification</li>
-          <li>Droit Ã  l'effacement</li>
-          <li>Droit Ã  la portabilitÃ©</li>
+          <li>Droit à l'effacement</li>
+          <li>Droit à la portabilité</li>
           <li>Droit d'opposition</li>
         </ul>
 
@@ -582,14 +1091,14 @@ export default function PrivacyPage() {
           Pour exercer vos droits : <a href="mailto:contact@formelio.fr">contact@formelio.fr</a>
         </p>
 
-        <h2>4. HÃ©bergement des donnÃ©es</h2>
+        <h2>4. Hébergement des données</h2>
         <p>
-          Vos donnÃ©es sont hÃ©bergÃ©es en Europe (rÃ©gion EU-Central-1) par Supabase...
+          Vos données sont hébergées en Europe (région EU-Central-1) par Supabase...
         </p>
 
         <h2>5. Cookies</h2>
         <p>
-          Notre site utilise des cookies strictement nÃ©cessaires au fonctionnement...
+          Notre site utilise des cookies strictement nécessaires au fonctionnement...
         </p>
       </div>
     </div>
@@ -601,7 +1110,7 @@ export default function PrivacyPage() {
 
 ## P1-08 - SEO & Performance Optimization
 
-**ID**: P1-08 | **Phase**: 1 | **Priority**: P1 | **Effort**: 5h | **Status**: ðŸ”´ TODO  
+**ID**: P1-08 | **Phase**: 1 | **Priority**: P1 | **Effort**: 5h | **Status**: 🔴 TODO
 **Branch**: `feature/phase1-landing`
 
 ### Description
@@ -609,9 +1118,9 @@ Optimiser le SEO et les performances du site (meta tags, sitemap, images, Core W
 
 ### Acceptance Criteria
 - [ ] Meta tags sur toutes les pages
-- [ ] Sitemap.xml gÃ©nÃ©rÃ©
-- [ ] Robots.txt configurÃ©
-- [ ] Images optimisÃ©es (WebP, lazy loading)
+- [ ] Sitemap.xml généré
+- [ ] Robots.txt configuré
+- [ ] Images optimisées (WebP, lazy loading)
 - [ ] PageSpeed score > 80 (mobile & desktop)
 - [ ] Core Web Vitals dans le vert
 - [ ] Structured data (Schema.org)
@@ -624,19 +1133,19 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   metadataBase: new URL('https://formelio.fr'),
   title: {
-    default: 'Formelio - FormalitÃ©s juridiques complexes | DÃ©blocage de dossiers',
+    default: 'Formelio - Formalités juridiques complexes | Déblocage de dossiers',
     template: '%s | Formelio',
   },
-  description: 'Service spÃ©cialisÃ© dans les formalitÃ©s administratives et juridiques complexes. Expertise insider des greffes franÃ§ais pour dÃ©bloquer vos dossiers rejetÃ©s.',
-  keywords: ['formalitÃ©s juridiques', 'dossier rejetÃ©', 'greffe tribunal commerce', 'RCS', 'expert-comptable'],
+  description: 'Service spécialisé dans les formalités administratives et juridiques complexes. Expertise insider des greffes français pour débloquer vos dossiers rejetés.',
+  keywords: ['formalités juridiques', 'dossier rejeté', 'greffe tribunal commerce', 'RCS', 'expert-comptable'],
   authors: [{ name: 'Formelio' }],
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
     url: 'https://formelio.fr',
     siteName: 'Formelio',
-    title: 'Formelio - DÃ©blocage de formalitÃ©s juridiques',
-    description: 'Votre temps, notre prioritÃ©. Expertise unique pour rÃ©soudre les blocages administratifs.',
+    title: 'Formelio - Déblocage de formalités juridiques',
+    description: 'Votre temps, notre priorité. Expertise unique pour résoudre les blocages administratifs.',
     images: [
       {
         url: '/og-image.png',
@@ -648,8 +1157,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Formelio - FormalitÃ©s juridiques',
-    description: 'Service spÃ©cialisÃ© dans le dÃ©blocage de dossiers complexes',
+    title: 'Formelio - Formalités juridiques',
+    description: 'Service spécialisé dans le déblocage de dossiers complexes',
     images: ['/og-image.png'],
   },
   robots: {
@@ -725,7 +1234,7 @@ export default function HomePage() {
     name: 'Formelio',
     url: 'https://formelio.fr',
     logo: 'https://formelio.fr/formelio_logo.png',
-    description: 'Service spÃ©cialisÃ© dans les formalitÃ©s juridiques complexes',
+    description: 'Service spécialisé dans les formalités juridiques complexes',
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'FR',
@@ -772,7 +1281,6 @@ npm install --save-dev @next/bundle-analyzer
 
 ---
 
-**Total Phase 1**: 8 tasks, 41 heures  
-**Branch unique**: `feature/phase1-landing`  
-**Merge vers develop**: AprÃ¨s validation complÃ¨te
-
+**Total Phase 1**: 8 tasks, 47 heures
+**Branch unique**: `feature/phase1-landing`
+**Merge vers develop**: Après validation complète
